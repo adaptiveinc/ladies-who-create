@@ -11,7 +11,11 @@ a shopping list.
 
 ## Try it
 
-Open `index.html`. That is the whole app — one file, no install, no sign-up.
+**→ [fyyying.github.io/family-meal-planner](https://fyyying.github.io/family-meal-planner/)**
+
+Works on a phone. Nothing to install, no account.
+
+Or run it yourself. `index.html` is the whole app — one file.
 
 - **Double-click it** and it runs with 65 built-in recipes.
 - **Serve the folder** and it loads all 420 real recipes from `recipes.csv`:

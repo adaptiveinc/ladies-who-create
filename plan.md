@@ -7,7 +7,7 @@
 - [x] Slice 3 — Thumbs up, thumbs down
 - [x] Slice 4 — The shopping list and the recipes
 - [x] Slice 5 — Real recipes, in a spreadsheet
-- [ ] Slice 6 — Share it with everyone (not started)
+- [x] Slice 6 — Share it with everyone
 
 Tick a box only when the group has tested the slice in the browser and agreed
 it works. The rules every slice must obey live in `CLAUDE.md`.
@@ -35,9 +35,20 @@ sitting and week one becomes available again. Dislikes match words and groups,
 not concepts, so "meat" works but "healthy" does not. Recipe amounts assume the
 original serves four.
 
+**Live at** <https://fyyying.github.io/family-meal-planner/> — repository at
+<https://github.com/fyyying/family-meal-planner>.
+
 **Open points to work through next:** (add them here as they come up)
 
-- [ ] _(waiting on the list from the room)_
+- [ ] Near-duplicate dinners can land in the same week — "Lasagne" and "Lasagna
+      Sandwiches" both turned up on the live site. The no-repeat rule matches
+      recipe ids, not similar dishes.
+- [ ] Some real recipes measure vegetables in cups, so the shopping list can say
+      "onion 90 ml". One row, correct maths, odd reading.
+- [ ] Two soups can land in the same week. Nothing spreads dish types across the
+      days.
+- [ ] Recipe names come from the source, so a few are shouty or oddly punctuated.
+- [ ] _(waiting on the rest of the list from the room)_
 
 ## The whole stack, one line
 
@@ -104,7 +115,8 @@ open, read and copy.
 3. `README.md` explains what it is, how to run it, and how it was built.
 
 **Done when:** someone who was in the room can open the link on their phone and
-plan a week.
+plan a week. ✅ Checked on the live site: 420 recipes load, a week plans, photos
+appear, the shopping list has no duplicate rows.
 
 ---
 
