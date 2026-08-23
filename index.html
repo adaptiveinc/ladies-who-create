@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Family Meal Planner</title>
+<style>
+  :root{
+    --ink:#2b2723; --soft:#6f665e; --line:#e5ded4; --card:#fffdfa;
+    --page:#f7f2ea; --accent:#c2562a; --accent-soft:#fbe9e0; --ok:#3b6d11;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--page);color:var(--ink);
+    font:16px/1.55 "Avenir Next",Avenir,"Segoe UI",system-ui,sans-serif;
+    padding:18px 20px 24px}
+  .wrap{max-width:1500px;margin:0 auto}
+  h1{font-size:clamp(24px,2.4vw,34px);margin:0 0 2px;letter-spacing:-.4px}
+  .sub{color:var(--soft);margin:0 0 12px;font-size:clamp(14px,1.2vw,17px)}
+
+  .layout{display:grid;grid-template-columns:340px minmax(0,1fr);gap:22px;align-items:start}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 18px;
+    position:sticky;top:20px}
+  h2{font-size:19px;margin:0 0 12px}
+  .fields{display:grid;gap:11px}
+  .field+.field{margin-top:0}
+  label{display:block;font-size:13px;color:var(--soft);margin-bottom:5px}
+  input[type=text]{width:100%;font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--ink)}
+  input[type=text]:focus{outline:2px solid var(--accent);border-color:transparent}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font:inherit;font-size:14px;padding:7px 13px;border:1px solid var(--line);background:#fff;
+    border-radius:999px;cursor:pointer;color:var(--ink);min-height:34px}
+  .chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  .rangeval{color:var(--ink)}
+  .go{font:inherit;font-size:17px;font-weight:600;padding:13px 20px;border:none;border-radius:11px;
+    background:var(--accent);color:#fff;cursor:pointer;margin-top:14px;width:100%;min-height:46px}
+  .go:hover{background:#a8461f}
+
+  .week{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+  .dish{height:var(--cardH,382px);perspective:1200px;background:none;border:none;
+    transition:height .3s ease}
+  .inner{position:relative;width:100%;height:100%;cursor:pointer;
+    transition:transform .55s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+  .dish.flipped .inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;
+    display:flex;flex-direction:column}
+  .face.back{transform:rotateY(180deg);padding:11px 13px 9px;overflow:hidden}
+  .inner:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:14px}
+  .flip{margin-top:auto;padding-top:8px;font-size:12px;color:var(--accent);font-weight:600}
+  .back h3{font-size:16px;margin:0 0 2px;line-height:1.25}
+  .shot{position:relative;height:clamp(104px,11vw,132px);background:var(--accent-soft);display:flex;
+    align-items:center;justify-content:center;text-align:center;padding:8px;color:#8c4020;
+    font-size:15px;font-weight:600}
+  .shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .body{padding:11px 13px 12px;flex:1;display:flex;flex-direction:column}
+  .day{font-size:12px;color:var(--accent);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+  .name{font-size:17px;font-weight:600;margin:3px 0 7px;line-height:1.25}
+  .meta{font-size:13px;color:var(--soft);margin:0 0 2px}
+  .tag{display:inline-block;font-size:12px;background:#eaf3de;color:var(--ok);
+    padding:2px 9px;border-radius:999px;margin-top:7px}
+  .per{color:#a09489}
+  .serves{font-size:11.5px;color:var(--soft);margin:4px 0 6px;line-height:1.35}
+  .back ul,.back ol{margin:0;padding-left:16px;font-size:12px;line-height:1.4}
+  .back li{margin-bottom:2px}
+  .back ol{margin-top:8px;color:var(--soft)}
+  .back .label{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--accent);
+    font-weight:600;margin:8px 0 3px}
+  .thumbs{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:8px}
+  .thumb{font:inherit;font-size:15px;line-height:1;padding:5px 9px;border:1px solid var(--line);
+    background:#fff;border-radius:9px;cursor:pointer;filter:grayscale(1);opacity:.55}
+  .thumb:hover{opacity:1;filter:none}
+  .thumb[aria-pressed=true]{filter:none;opacity:1;border-color:var(--accent);background:var(--accent-soft)}
+  .thumbs .flip{margin:0 0 0 auto;padding:0}
+  .dish.liked .face.front{border-color:#9dc46c;box-shadow:inset 0 0 0 1px #9dc46c}
+  .dish.banned .face.front{opacity:.72}
+  .verdicts{margin-top:18px}
+  .vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:8px}
+  .vbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .vbox h3{font-size:14px;margin:0 0 6px}
+  .vbox ul{list-style:none;margin:0;padding:0;font-size:13px}
+  .vbox li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;color:var(--soft)}
+  .vbox li b{font-weight:500;color:var(--ink)}
+  .undo{background:none;border:none;color:var(--accent);font:inherit;font-size:12.5px;
+    cursor:pointer;padding:0;text-decoration:underline;white-space:nowrap}
+  .vnote{font-size:12.5px;color:var(--soft);margin:0}
+  .sourcenote{font-size:12.5px;color:var(--soft);margin:-6px 0 12px}
+  .sourcenote code{font-size:12px;background:#efe8dd;padding:1px 5px;border-radius:4px}
+  .src{margin:8px 0 0;font-size:12px}
+  .src a{color:var(--accent)}
+  .avoiding{font-size:12.5px;color:var(--soft);margin:10px 0 0;text-align:center;line-height:1.4}
+  .recent{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+  .recent h2{font-size:16px;margin:0 0 3px}
+  .recent .why{font-size:12.5px;color:var(--soft);margin:0 0 10px}
+  .past{display:flex;flex-wrap:wrap;gap:8px}
+  .pastitem{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);
+    border-radius:999px;padding:4px 12px 4px 4px;font-size:12.5px;color:var(--soft)}
+  .pastitem img{width:26px;height:26px;border-radius:50%;object-fit:cover;display:block}
+  .pastitem .dot{width:26px;height:26px;border-radius:50%;background:var(--accent-soft)}
+  .pastitem b{font-weight:600;color:var(--ink)}
+  .forget{background:none;border:none;color:var(--accent);font:inherit;font-size:12.5px;
+    cursor:pointer;padding:6px 4px 6px 0;text-decoration:underline}
+  .forget:hover{color:#8c4020}
+  .confirm{font-size:12.5px;color:var(--soft);display:inline-flex;align-items:center;gap:4px;
+    flex-wrap:wrap;padding-top:6px}
+  .actions{display:flex;gap:8px;margin-bottom:12px}
+  .actions button{font:inherit;font-size:14px;padding:9px 16px;border:1px solid var(--accent);
+    background:#fff;color:var(--accent);border-radius:10px;cursor:pointer;font-weight:600}
+  .actions button:hover{background:var(--accent);color:#fff}
+  .sheet{position:fixed;inset:0;background:rgba(43,39,35,.45);display:flex;align-items:center;
+    justify-content:center;padding:20px;z-index:50}
+  .sheet[hidden],.actions[hidden]{display:none}
+  .sheetinner{background:var(--card);border-radius:16px;max-width:620px;width:100%;max-height:88vh;
+    display:flex;flex-direction:column;overflow:hidden}
+  .sheethead{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 10px}
+  .sheethead h2{margin:0;font-size:20px}
+  .sheethead button{background:none;border:none;font-size:26px;line-height:1;cursor:pointer;
+    color:var(--soft);padding:0 4px}
+  .sheetbody{overflow-y:auto;padding:0 20px 4px}
+  .aisle{font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--accent);
+    font-weight:600;margin:14px 0 6px}
+  .shoplist{list-style:none;margin:0;padding:0}
+  .shoplist li{display:flex;justify-content:space-between;gap:12px;padding:5px 0;
+    border-bottom:1px solid var(--line);font-size:15px}
+  .shoplist .amt{color:var(--soft);white-space:nowrap}
+  .sheetfoot{display:flex;align-items:center;gap:10px;padding:12px 20px 16px;
+    border-top:1px solid var(--line)}
+  .sheetfoot button{font:inherit;font-size:15px;padding:10px 18px;border:none;border-radius:10px;
+    background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
+  .copied{font-size:13px;color:var(--ok)}
+  #printable{display:none}
+  .warn{background:#fdf3d8;border:1px solid #e6d3a0;border-radius:12px;padding:14px 18px;
+    font-size:16px;margin-bottom:14px}
+  .empty{color:var(--soft);font-size:16px}
+  .saved{font-size:12px;color:var(--soft);margin:8px 0 0;text-align:center;line-height:1.4}
+  .reading{font-size:12.5px;color:var(--accent);margin:6px 0 0;line-height:1.4}
+  input[type=number]{width:100%;font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--line);
+    border-radius:9px;background:#fff;color:var(--ink)}
+
+  @media (max-width:1080px){
+    .layout{grid-template-columns:1fr;gap:16px}
+    .panel{position:static}
+    .fields{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+    .week{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  }
+  @media (max-width:640px){
+    body{padding:14px 14px 40px;font-size:17px}
+    .panel{padding:16px}
+    .fields{grid-template-columns:1fr}
+    .chip{font-size:15px;padding:9px 15px;min-height:42px}
+    input[type=text],input[type=number]{font-size:16px;padding:11px 12px}
+    .week{grid-template-columns:1fr;gap:12px}
+    .shot{height:180px}
+    .dish{--cardH:430px}
+    .name{font-size:19px}
+    .meta{font-size:15px}
+    .go{font-size:18px;min-height:52px}
+  }
+  @media print{
+    body{background:#fff;padding:0;font-size:11pt}
+    .wrap,.sheet{display:none !important}
+    #printable{display:block}
+    .psheet{page-break-after:always}
+    .psheet:last-child{page-break-after:auto}
+    .precipe{page-break-inside:avoid;margin-bottom:18pt}
+    .precipe img{width:150pt;height:100pt;object-fit:cover;float:right;margin:0 0 8pt 10pt}
+    .precipe h3{font-size:14pt;margin:0 0 2pt}
+    .precipe .pmeta{color:#666;font-size:9.5pt;margin:0 0 6pt}
+    .precipe ul,.precipe ol{margin:0 0 4pt;padding-left:14pt;font-size:10pt}
+    #printable h1{font-size:18pt;margin:0 0 2pt}
+    #printable .plead{color:#666;font-size:10pt;margin:0 0 12pt}
+    #printable .paisle{font-weight:600;margin:10pt 0 2pt;font-size:11pt}
+    #printable .plist{columns:2;font-size:10pt;margin:0;padding-left:14pt}
+  }
+  @media (min-width:1500px){
+    .week{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Family Meal Planner</h1>
+  <p class="sub">Tell us about your family and get a whole week of dinners.</p>
+  <p class="sourcenote" id="sourcenote"></p>
+
+  <div class="layout">
+  <section class="panel">
+    <h2>About us</h2>
+    <div class="fields">
+      <div class="field">
+        <label for="adults">How many adults?</label>
+        <input type="number" id="adults" min="1" max="12" value="2">
+      </div>
+      <div class="field">
+        <label for="kids">Children's ages, separated by commas</label>
+        <input type="text" id="kids" placeholder="6, 9 — leave empty if none">
+        <p class="reading" id="reading"></p>
+      </div>
+      <div class="field">
+        <label for="portions">Cooking for how many grown-up portions?</label>
+        <input type="number" id="portions" min="1" max="20" step="0.5" value="3">
+        <p class="reading" id="portionhint"></p>
+      </div>
+      <div class="field">
+        <label for="dislikes">Foods we don't like, separated by commas</label>
+        <input type="text" id="dislikes" placeholder="olives, mushrooms">
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label>Allergies — tap any that apply</label>
+      <div class="chips" id="allergies">
+        <button type="button" class="chip" data-a="dairy" aria-pressed="false">dairy</button>
+        <button type="button" class="chip" data-a="gluten" aria-pressed="false">gluten</button>
+        <button type="button" class="chip" data-a="nuts" aria-pressed="false">nuts</button>
+        <button type="button" class="chip" data-a="eggs" aria-pressed="false">eggs</button>
+        <button type="button" class="chip" data-a="fish" aria-pressed="false">fish</button>
+      </div>
+    </div>
+
+    <div class="fields" style="margin-top:12px">
+      <div>
+        <label>What are we going for?</label>
+        <div class="chips" id="goal">
+          <button type="button" class="chip" data-g="balanced" aria-pressed="true">balanced</button>
+          <button type="button" class="chip" data-g="light" aria-pressed="false">lighter</button>
+          <button type="button" class="chip" data-g="protein" aria-pressed="false">high protein</button>
+        </div>
+      </div>
+      <div>
+        <label for="mins">Time to cook on a weeknight — <span class="rangeval" id="minsout">40 minutes</span></label>
+        <input type="range" id="mins" min="15" max="90" step="5" value="40">
+      </div>
+    </div>
+
+    <button class="go" id="plan">Plan my week</button>
+    <p class="avoiding" id="avoiding"></p>
+    <p class="saved">Your answers are saved on this computer, so they'll be here next time.</p>
+  </section>
+
+  <div>
+    <div id="message"></div>
+    <div class="actions" id="actions" hidden>
+      <button type="button" id="shopbtn">Shopping list</button>
+      <button type="button" id="printbtn">Print the week</button>
+    </div>
+    <section class="week" id="week"></section>
+    <section class="verdicts" id="verdicts"></section>
+    <section class="recent" id="recent"></section>
+  </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheetinner">
+    <div class="sheethead">
+      <h2 id="sheettitle">Shopping list</h2>
+      <button type="button" id="closesheet" aria-label="Close">&times;</button>
+    </div>
+    <div class="sheetbody" id="sheetbody"></div>
+    <div class="sheetfoot">
+      <button type="button" id="copybtn">Copy for WhatsApp</button>
+      <span class="copied" id="copied"></span>
+    </div>
+  </div>
+</div>
+
+<section id="printable"></section>
+
+<script>
+const P = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
+function ing(item, qty, unit, aisle){ return {item:item, qty:qty, unit:unit, aisle:aisle}; }
+function r(id,name,photo,minutes,kidFriendly,profile,kcal,protein,allergens,ings,steps){
+  return {id:id,name:name,photo:!photo?"":(photo.indexOf("http")===0?photo:P+photo),minutes:minutes,kidFriendly:kidFriendly,
+    profile:profile,kcal:kcal,protein:protein,allergens:derivedAllergens(ings, allergens),
+    ingredients:ings.map(function(x){return ing(x[0],x[1],x[2],x[3]);}),steps:steps};
+}
+const PRODUCE="produce", DAIRY="dairy", MEAT="meat and fish", DRY="dry goods", FREEZER="freezer";
+
+// Allergens are DERIVED from the ingredient list, so a new recipe cannot be
+// mistagged by hand. Anything a recipe declares itself is kept as well.
+const ALLERGEN_INGREDIENTS = {
+  dairy:  ["milk","butter","cheese","cream","yoghurt","parmesan","mozzarella","tortellini","gnocchi"],
+  gluten: ["flour","pasta","spaghetti","macaroni","lasagne","tortellini","gnocchi","breadcrumbs",
+           "panko","bread","buns","tortillas","taco shells","flatbreads","pizza bases","couscous",
+           "egg noodles","ramen noodles","pastry","soy sauce","kecap manis","gochujang",
+           "chilli bean paste","curry sauce mix","gravy granules","breaded"],
+  eggs:   ["egg","tortellini","gnocchi","pastry","panko"],
+  nuts:   ["peanut","pine nuts","almond","cashew","walnut"],
+  fish:   ["salmon","tuna","cod","prawn","fish","anchovy"]
+};
+
+function derivedAllergens(ings, declared){
+  const found = {};
+  declared.forEach(function(a){ found[a] = true; });
+  ings.forEach(function(x){
+    const item = x[0].toLowerCase();
+    Object.keys(ALLERGEN_INGREDIENTS).forEach(function(a){
+      ALLERGEN_INGREDIENTS[a].forEach(function(word){
+        if(item.indexOf(word) > -1) found[a] = true;
+      });
+    });
+  });
+  return Object.keys(found);
+}
+
+// Typing "pasta" should catch tortellini; typing "meat" should catch mince.
+const DISLIKE_GROUPS = {
+  pasta: ["pasta","spaghetti","macaroni","lasagne","tortellini","gnocchi","noodles"],
+  meat:  ["beef","pork","lamb","chicken","sausage","bacon","chorizo","ham","mince","duck"],
+  fish:  ["fish","salmon","tuna","cod","prawn"],
+  spicy: ["chilli","gochujang","cajun","curry paste","chilli bean paste"],
+  cheese:["cheese","parmesan","mozzarella"]
+};
+
+function dislikeWords(word){
+  return DISLIKE_GROUPS[word] || [word];
+}
+
+const BUILTIN = [
+r("spaghetti-bolognese","Spaghetti bolognese","4/4d/Tagliatelle_al_rag%C3%B9_%28image_modified%29.jpg/500px-Tagliatelle_al_rag%C3%B9_%28image_modified%29.jpg",35,true,"balanced",620,34,["gluten"],
+ [["beef mince",500,"g",MEAT],["spaghetti",400,"g",DRY],["chopped tomatoes",400,"g",DRY],["onion",1,"",PRODUCE],["carrot",1,"",PRODUCE],["garlic",2,"cloves",PRODUCE]],
+ ["Fry the onion, carrot and garlic until soft.","Brown the mince, then add the tomatoes.","Simmer 20 minutes while the spaghetti boils.","Toss together and serve."]),
+r("chicken-curry","Chicken curry with rice","e/e2/Red_roast_duck_curry.jpg/500px-Red_roast_duck_curry.jpg",35,true,"balanced",560,38,[],
+ [["chicken thighs",600,"g",MEAT],["curry paste",3,"tbsp",DRY],["coconut milk",400,"ml",DRY],["rice",300,"g",DRY],["onion",1,"",PRODUCE],["spinach",100,"g",PRODUCE]],
+ ["Fry the onion, then the curry paste for a minute.","Add chicken and brown all over.","Pour in coconut milk and simmer 20 minutes.","Stir in spinach, serve with rice."]),
+r("shepherds-pie","Shepherd's pie","5/52/Homerton_College_-_Shepherd%27s_pie_%28cropped%29.jpg/500px-Homerton_College_-_Shepherd%27s_pie_%28cropped%29.jpg",60,true,"hearty",640,32,["dairy"],
+ [["lamb mince",500,"g",MEAT],["potatoes",900,"g",PRODUCE],["butter",50,"g",DAIRY],["carrot",2,"",PRODUCE],["frozen peas",150,"g",FREEZER],["stock cube",1,"",DRY]],
+ ["Boil and mash the potatoes with butter.","Brown the mince with carrot and stock.","Top with mash and bake 25 minutes at 200C."]),
+r("lasagne","Lasagne with green salad","b/ba/Lasagne_-_stonesoup.jpg/500px-Lasagne_-_stonesoup.jpg",55,true,"hearty",700,36,["gluten","dairy"],
+ [["beef mince",500,"g",MEAT],["lasagne sheets",250,"g",DRY],["chopped tomatoes",400,"g",DRY],["milk",500,"ml",DAIRY],["cheese",150,"g",DAIRY],["butter",40,"g",DAIRY],["green salad",1,"bag",PRODUCE]],
+ ["Make a meat sauce and a white sauce.","Layer sheets, meat, white sauce, repeat.","Cheese on top, bake 35 minutes at 190C.","Green salad alongside."]),
+r("chili-con-carne","Chili con carne with rice","5/50/Bowl_of_chili.jpg/500px-Bowl_of_chili.jpg",40,true,"balanced",540,32,[],
+ [["beef mince",500,"g",MEAT],["kidney beans",400,"g",DRY],["chopped tomatoes",400,"g",DRY],["rice",300,"g",DRY],["onion",1,"",PRODUCE],["chilli powder",1,"tbsp",DRY]],
+ ["Brown the mince with onion and chilli.","Add tomatoes and beans, simmer 25 minutes.","Serve over rice."]),
+r("beef-tacos","Beef tacos","7/73/001_Tacos_de_carnitas%2C_carne_asada_y_al_pastor.jpg/500px-001_Tacos_de_carnitas%2C_carne_asada_y_al_pastor.jpg",25,true,"balanced",520,28,["gluten"],
+ [["beef mince",500,"g",MEAT],["taco shells",12,"",DRY],["lettuce",1,"",PRODUCE],["tomato",2,"",PRODUCE],["sweetcorn",200,"g",DRY],["lime",1,"",PRODUCE]],
+ ["Fry the mince with taco spices.","Chop the salad while it cooks.","Warm the shells and let everyone build their own."]),
+r("chicken-fajitas","Chicken fajitas","e/e2/Chicken_fajita_platter%2C_Lone_Star_Texas_Grill%2C_Windsor%2C_Ontario%2C_2025-06-14_03.jpg/500px-Chicken_fajita_platter%2C_Lone_Star_Texas_Grill%2C_Windsor%2C_Ontario%2C_2025-06-14_03.jpg",25,true,"balanced",530,36,["gluten"],
+ [["chicken breast",500,"g",MEAT],["tortillas",8,"",DRY],["peppers",2,"",PRODUCE],["onion",1,"",PRODUCE],["paprika",2,"tsp",DRY],["lime",1,"",PRODUCE]],
+ ["Slice everything into strips.","Fry chicken hard, add peppers and onion.","Squeeze lime over, roll into warm tortillas."]),
+r("pad-thai","Pad thai","3/39/Phat_Thai_kung_Chang_Khien_street_stall.jpg/500px-Phat_Thai_kung_Chang_Khien_street_stall.jpg",25,false,"balanced",590,26,["eggs","nuts","fish"],
+ [["rice noodles",250,"g",DRY],["prawns",300,"g",MEAT],["eggs",2,"",DAIRY],["peanuts",50,"g",DRY],["fish sauce",2,"tbsp",DRY],["beansprouts",150,"g",PRODUCE]],
+ ["Soak the noodles in hot water.","Fry prawns, push aside, scramble the eggs.","Add noodles, sauce and beansprouts, toss.","Scatter peanuts on top."]),
+r("ratatouille","Ratatouille with crusty bread","3/37/Ratatouille_home_cooked.jpg/500px-Ratatouille_home_cooked.jpg",40,true,"light",380,9,[],
+ [["aubergine",1,"",PRODUCE],["courgette",2,"",PRODUCE],["peppers",2,"",PRODUCE],["chopped tomatoes",400,"g",DRY],["onion",1,"",PRODUCE],["olive oil",3,"tbsp",DRY],["crusty bread",1,"loaf",DRY]],
+ ["Chop everything into chunks.","Fry the vegetables in batches.","Add tomatoes and stew gently 25 minutes.","Serve with warm crusty bread."]),
+r("moussaka","Moussaka","a/a8/MussakasMeMelitsanesKePatates01.JPG/500px-MussakasMeMelitsanesKePatates01.JPG",60,false,"hearty",680,33,["dairy"],
+ [["lamb mince",500,"g",MEAT],["aubergine",2,"",PRODUCE],["potatoes",500,"g",PRODUCE],["milk",400,"ml",DAIRY],["cheese",100,"g",DAIRY],["cinnamon",1,"tsp",DRY]],
+ ["Fry aubergine and potato slices.","Cook the mince with cinnamon and tomato.","Layer, top with white sauce, bake 40 minutes."]),
+r("paella","Paella","e/ed/01_Paella_Valenciana_original.jpg/500px-01_Paella_Valenciana_original.jpg",45,false,"balanced",600,34,["fish"],
+ [["paella rice",300,"g",DRY],["prawns",250,"g",MEAT],["chicken thighs",300,"g",MEAT],["peppers",1,"",PRODUCE],["frozen peas",150,"g",FREEZER],["saffron",1,"pinch",DRY]],
+ ["Brown the chicken, then the peppers.","Stir in rice and saffron stock.","Simmer 20 minutes, add prawns and peas at the end."]),
+r("mushroom-risotto","Mushroom risotto","a/a5/Risotto_with_speck_and_goat_cheese_%286101067436%29.jpg/500px-Risotto_with_speck_and_goat_cheese_%286101067436%29.jpg",35,true,"balanced",520,15,["dairy"],
+ [["risotto rice",300,"g",DRY],["mushrooms",400,"g",PRODUCE],["stock cube",2,"",DRY],["butter",50,"g",DAIRY],["parmesan",60,"g",DAIRY],["onion",1,"",PRODUCE]],
+ ["Fry mushrooms hard, set aside.","Soften onion, add rice, then stock a ladle at a time.","Stir 20 minutes, finish with butter and parmesan."]),
+r("carbonara","Spaghetti carbonara with salad","3/33/Espaguetis_carbonara.jpg/500px-Espaguetis_carbonara.jpg",20,true,"hearty",690,31,["gluten","eggs","dairy"],
+ [["spaghetti",400,"g",DRY],["bacon",200,"g",MEAT],["eggs",4,"",DAIRY],["parmesan",80,"g",DAIRY],["black pepper",1,"tsp",DRY],["green salad",1,"bag",PRODUCE]],
+ ["Boil the spaghetti.","Crisp the bacon.","Off the heat, stir through beaten egg and cheese so it turns creamy, not scrambled.","Salad on the side."]),
+r("pasta-pesto","Pasta pesto","c/c9/BasilPesto.JPG/500px-BasilPesto.JPG",20,true,"balanced",560,18,["gluten","dairy","nuts"],
+ [["pasta",400,"g",DRY],["basil",60,"g",PRODUCE],["pine nuts",50,"g",DRY],["parmesan",60,"g",DAIRY],["olive oil",100,"ml",DRY],["garlic",1,"clove",PRODUCE]],
+ ["Blitz basil, nuts, garlic, cheese and oil.","Boil the pasta.","Stir together with a splash of pasta water."]),
+r("minestrone","Minestrone","f/fe/Minestrone_soup_%285%29.jpg/500px-Minestrone_soup_%285%29.jpg",35,true,"light",340,13,["gluten"],
+ [["small pasta",150,"g",DRY],["chopped tomatoes",400,"g",DRY],["carrot",2,"",PRODUCE],["celery",2,"sticks",PRODUCE],["cannellini beans",400,"g",DRY],["stock cube",2,"",DRY]],
+ ["Soften the chopped vegetables.","Add tomatoes, beans and stock, simmer 15 minutes.","Add pasta and cook until just soft."]),
+r("goulash","Beef goulash with potatoes","5/5c/Gulyas080.jpg/500px-Gulyas080.jpg",60,false,"hearty",610,40,[],
+ [["stewing beef",600,"g",MEAT],["paprika",2,"tbsp",DRY],["onion",2,"",PRODUCE],["peppers",2,"",PRODUCE],["potatoes",500,"g",PRODUCE],["chopped tomatoes",400,"g",DRY]],
+ ["Brown the beef in batches.","Soften onions, stir in plenty of paprika.","Add everything else and stew 45 minutes."]),
+r("beef-stroganoff","Beef stroganoff with rice","9/95/Moscow_%288351271825%29.jpg/500px-Moscow_%288351271825%29.jpg",35,false,"hearty",650,38,["dairy"],
+ [["beef strips",500,"g",MEAT],["mushrooms",300,"g",PRODUCE],["sour cream",200,"ml",DAIRY],["onion",1,"",PRODUCE],["rice",300,"g",DRY],["paprika",1,"tbsp",DRY]],
+ ["Sear the beef fast and lift it out.","Fry mushrooms and onion.","Return beef, stir in sour cream, serve on rice."]),
+r("roast-chicken","Roast chicken and potatoes","d/d9/Max%27s_Roasted_Chicken_-_Evan_Swigart.jpg/500px-Max%27s_Roasted_Chicken_-_Evan_Swigart.jpg",75,true,"balanced",640,45,[],
+ [["whole chicken",1.5,"kg",MEAT],["potatoes",1,"kg",PRODUCE],["lemon",1,"",PRODUCE],["carrot",3,"",PRODUCE],["olive oil",3,"tbsp",DRY],["rosemary",2,"sprigs",PRODUCE]],
+ ["Lemon in the chicken, oil and salt on top.","Roast at 200C for an hour with the vegetables around it.","Rest 10 minutes before carving."]),
+r("spaghetti-meatballs","Spaghetti and meatballs","7/7c/Spaghetti_and_meatballs_1.jpg/500px-Spaghetti_and_meatballs_1.jpg",40,true,"hearty",670,35,["gluten","eggs"],
+ [["beef mince",500,"g",MEAT],["breadcrumbs",60,"g",DRY],["eggs",1,"",DAIRY],["spaghetti",400,"g",DRY],["passata",500,"g",DRY],["garlic",2,"cloves",PRODUCE]],
+ ["Mix mince, breadcrumbs and egg, roll into balls.","Brown them, then simmer in passata 20 minutes.","Serve on spaghetti."]),
+r("bean-burritos","Bean burritos","6/60/Burrito.JPG/500px-Burrito.JPG",25,true,"balanced",540,20,["gluten"],
+ [["tortillas",8,"",DRY],["black beans",800,"g",DRY],["rice",250,"g",DRY],["peppers",1,"",PRODUCE],["cheese",100,"g",DAIRY],["cumin",2,"tsp",DRY]],
+ ["Cook the rice.","Fry peppers with cumin, add beans and crush a few.","Fill, roll, and toast the wraps in a dry pan."]),
+r("chicken-noodle-soup","Chicken noodle soup","b/b3/Chicken_Noodle_Soup.jpg/500px-Chicken_Noodle_Soup.jpg",30,true,"light",360,28,["gluten"],
+ [["chicken breast",400,"g",MEAT],["egg noodles",200,"g",DRY],["carrot",2,"",PRODUCE],["celery",2,"sticks",PRODUCE],["stock cube",2,"",DRY],["parsley",1,"handful",PRODUCE]],
+ ["Simmer chicken in stock with the vegetables 15 minutes.","Shred the chicken, return it.","Add noodles for the last 5 minutes."]),
+r("tomato-soup","Tomato soup and toast","8/8c/Tomato_soup%2C_plant-based_%2844040252791%29.jpg/500px-Tomato_soup%2C_plant-based_%2844040252791%29.jpg",25,true,"light",320,10,["gluten"],
+ [["chopped tomatoes",800,"g",DRY],["onion",1,"",PRODUCE],["stock cube",1,"",DRY],["bread",4,"slices",DRY],["olive oil",2,"tbsp",DRY],["basil",1,"handful",PRODUCE]],
+ ["Soften the onion.","Add tomatoes and stock, simmer 15 minutes.","Blitz smooth, serve with toast."]),
+r("falafel-wraps","Falafel wraps","5/57/Falafels_2.jpg/500px-Falafels_2.jpg",30,true,"balanced",480,18,["gluten"],
+ [["chickpeas",800,"g",DRY],["flatbreads",6,"",DRY],["cucumber",1,"",PRODUCE],["tomato",2,"",PRODUCE],["tahini",3,"tbsp",DRY],["cumin",2,"tsp",DRY]],
+ ["Blitz chickpeas with herbs and cumin, shape into patties.","Fry until crisp on both sides.","Stuff into flatbreads with salad and tahini."]),
+r("shakshuka","Shakshuka","1/18/Shakshuka_by_Calliopejen1.jpg/500px-Shakshuka_by_Calliopejen1.jpg",25,true,"light",390,20,["eggs"],
+ [["eggs",6,"",DAIRY],["chopped tomatoes",800,"g",DRY],["peppers",2,"",PRODUCE],["onion",1,"",PRODUCE],["paprika",2,"tsp",DRY],["bread",4,"slices",DRY]],
+ ["Fry peppers and onion with paprika.","Add tomatoes, simmer until thick.","Crack eggs into dips in the sauce, lid on, 6 minutes."]),
+r("chicken-tagine","Chicken tagine with couscous","3/3a/Tajine-marocain-un-plat-varie-et-sain_%28cropped%29.jpg/500px-Tajine-marocain-un-plat-varie-et-sain_%28cropped%29.jpg",50,true,"balanced",560,36,[],
+ [["chicken thighs",800,"g",MEAT],["apricots",100,"g",DRY],["chickpeas",400,"g",DRY],["onion",2,"",PRODUCE],["ras el hanout",2,"tbsp",DRY],["lemon",1,"",PRODUCE],["couscous",250,"g",DRY]],
+ ["Brown the chicken, lift out.","Soften onions with the spice mix.","Everything back in, lid on, 35 minutes.","Steep the couscous in boiling stock for 5 minutes."]),
+r("red-lentil-dal","Red lentil dal with rice","f/f5/3_types_of_lentil.png/500px-3_types_of_lentil.png",30,true,"light",410,18,[],
+ [["red lentils",300,"g",DRY],["coconut milk",400,"ml",DRY],["onion",1,"",PRODUCE],["ginger",20,"g",PRODUCE],["turmeric",1,"tsp",DRY],["rice",250,"g",DRY]],
+ ["Fry onion, ginger and spices.","Add lentils and coconut milk, simmer 20 minutes.","Serve with rice."]),
+r("chana-masala","Chana masala with rice","8/8e/Chana_masala.jpg/500px-Chana_masala.jpg",30,true,"light",430,17,[],
+ [["chickpeas",800,"g",DRY],["chopped tomatoes",400,"g",DRY],["onion",1,"",PRODUCE],["garam masala",2,"tsp",DRY],["ginger",20,"g",PRODUCE],["rice",250,"g",DRY]],
+ ["Fry onion, ginger and spices until fragrant.","Add tomatoes and chickpeas.","Simmer 20 minutes, serve with rice."]),
+r("butter-chicken","Butter chicken with rice","4/41/Butter_Chicken_%26_Butter_Naan_-_Home_-_Chandigarh_-_India_-_0006.jpg/500px-Butter_Chicken_%26_Butter_Naan_-_Home_-_Chandigarh_-_India_-_0006.jpg",40,true,"hearty",680,42,["dairy","nuts"],
+ [["chicken thighs",700,"g",MEAT],["yoghurt",200,"g",DAIRY],["butter",50,"g",DAIRY],["passata",400,"g",DRY],["ground almonds",40,"g",DRY],["garam masala",2,"tsp",DRY],["basmati rice",300,"g",DRY],["spinach",200,"g",PRODUCE]],
+ ["Marinate the chicken in yoghurt and spice.","Grill or fry until charred at the edges.","Simmer in buttery tomato sauce 15 minutes.","Wilt the spinach in at the end. Serve with rice."]),
+r("chicken-biryani","Chicken biryani","5/5a/%22Hyderabadi_Dum_Biryani%22.jpg/500px-%22Hyderabadi_Dum_Biryani%22.jpg",50,true,"hearty",640,38,[],
+ [["chicken thighs",700,"g",MEAT],["basmati rice",400,"g",DRY],["onion",2,"",PRODUCE],["biryani spice",2,"tbsp",DRY],["stock cube",1,"",DRY],["coriander",1,"handful",PRODUCE]],
+ ["Fry onions until deep brown.","Brown the spiced chicken, part-cook the rice.","Layer chicken and rice, lid on, steam 20 minutes."]),
+r("shoyu-ramen","Shoyu ramen","c/c3/Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg/500px-Shoyu_Ramen%EF%BC%88Tokyo_Ramen%EF%BC%89_-_01.jpg",30,true,"balanced",590,30,["gluten","eggs"],
+ [["ramen noodles",300,"g",DRY],["pork belly",300,"g",MEAT],["eggs",4,"",DAIRY],["soy sauce",4,"tbsp",DRY],["spring onions",4,"",PRODUCE],["stock cube",2,"",DRY]],
+ ["Soft-boil the eggs, 6 minutes.","Simmer stock with soy and ginger.","Cook noodles, pile everything into bowls."]),
+r("egg-fried-rice","Egg fried rice","c/c3/Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg/500px-Koh_Mak%2C_Thailand%2C_Fried_rice_with_seafood%2C_Thai_fried_rice.jpg",20,true,"balanced",480,19,["eggs"],
+ [["cooked rice",600,"g",DRY],["eggs",3,"",DAIRY],["frozen peas",150,"g",FREEZER],["spring onions",4,"",PRODUCE],["soy sauce",3,"tbsp",DRY],["sesame oil",1,"tbsp",DRY]],
+ ["Scramble the eggs and set aside.","Fry rice hard in a very hot pan.","Add peas, egg, soy and spring onion."]),
+r("teriyaki-salmon","Teriyaki salmon with rice and broccoli","9/91/22nd_June_2012_Teriyaki_Duck.jpg/500px-22nd_June_2012_Teriyaki_Duck.jpg",20,true,"high-protein",560,42,["fish"],
+ [["salmon fillets",4,"",MEAT],["soy sauce",4,"tbsp",DRY],["honey",2,"tbsp",DRY],["rice",300,"g",DRY],["broccoli",300,"g",PRODUCE],["ginger",20,"g",PRODUCE]],
+ ["Mix soy, honey and ginger.","Fry salmon skin-down 4 minutes, flip, pour sauce over.","Steam broccoli, serve on rice."]),
+r("katsu-curry","Chicken katsu curry","3/3b/Beef_curry_rice_003.jpg/500px-Beef_curry_rice_003.jpg",40,true,"hearty",720,40,["gluten","eggs"],
+ [["chicken breast",4,"",MEAT],["panko breadcrumbs",150,"g",DRY],["eggs",2,"",DAIRY],["curry sauce mix",1,"pack",DRY],["rice",300,"g",DRY],["carrot",1,"",PRODUCE]],
+ ["Egg then breadcrumb the chicken.","Fry until golden, 4 minutes each side.","Make the sauce, slice the chicken, serve over rice."]),
+r("bibimbap","Bibimbap","4/44/Dolsot-bibimbap.jpg/500px-Dolsot-bibimbap.jpg",35,false,"balanced",580,29,["eggs"],
+ [["beef mince",300,"g",MEAT],["rice",300,"g",DRY],["eggs",4,"",DAIRY],["carrot",2,"",PRODUCE],["spinach",200,"g",PRODUCE],["gochujang",3,"tbsp",DRY]],
+ ["Cook rice; fry each vegetable separately.","Fry the spiced mince.","Arrange over rice, fried egg on top, chilli paste alongside."]),
+r("bulgogi","Beef bulgogi with rice","c/ce/Bulgogi_2.jpg/500px-Bulgogi_2.jpg",30,true,"high-protein",610,44,[],
+ [["beef strips",600,"g",MEAT],["soy sauce",4,"tbsp",DRY],["pear",1,"",PRODUCE],["rice",300,"g",DRY],["spring onions",4,"",PRODUCE],["sesame oil",1,"tbsp",DRY]],
+ ["Marinate beef in grated pear, soy and sesame 15 minutes.","Fry very hot and fast in batches.","Serve with rice and spring onion."]),
+r("pho","Chicken pho","5/52/Bowl_of_Meatball_pho.jpg/500px-Bowl_of_Meatball_pho.jpg",40,false,"light",430,32,[],
+ [["chicken thighs",500,"g",MEAT],["rice noodles",250,"g",DRY],["ginger",30,"g",PRODUCE],["star anise",3,"",DRY],["beansprouts",150,"g",PRODUCE],["coriander",1,"handful",PRODUCE]],
+ ["Simmer chicken with charred ginger and spices 30 minutes.","Shred the chicken, strain the broth.","Pour over noodles, top with herbs."]),
+r("nasi-goreng","Nasi goreng","c/c7/Nasi_Goreng_Kampung_%2811967588375%29.jpg/500px-Nasi_Goreng_Kampung_%2811967588375%29.jpg",25,true,"balanced",540,24,["eggs"],
+ [["cooked rice",600,"g",DRY],["chicken breast",300,"g",MEAT],["eggs",4,"",DAIRY],["kecap manis",3,"tbsp",DRY],["shallots",3,"",PRODUCE],["cucumber",1,"",PRODUCE]],
+ ["Fry shallots and chicken.","Add rice and kecap manis, fry hard.","Top each bowl with a fried egg."]),
+r("chicken-satay","Chicken satay with rice","2/24/Sate_Udang.JPG/500px-Sate_Udang.JPG",30,true,"high-protein",580,40,["nuts"],
+ [["chicken breast",600,"g",MEAT],["peanut butter",4,"tbsp",DRY],["coconut milk",200,"ml",DRY],["soy sauce",2,"tbsp",DRY],["rice",250,"g",DRY],["cucumber",1,"",PRODUCE]],
+ ["Thread chicken onto skewers, grill 12 minutes.","Warm peanut butter with coconut milk and soy.","Serve with rice and cucumber."]),
+r("veg-stir-fry","Vegetable stir fry","6/62/Making_Stir-Fry_%283286445383%29.jpg/500px-Making_Stir-Fry_%283286445383%29.jpg",20,true,"light",380,14,[],
+ [["mixed vegetables",700,"g",PRODUCE],["rice noodles",250,"g",DRY],["soy sauce",3,"tbsp",DRY],["garlic",2,"cloves",PRODUCE],["ginger",20,"g",PRODUCE],["sesame oil",1,"tbsp",DRY]],
+ ["Chop everything before you start.","Fry garlic and ginger 30 seconds, then the hard vegetables.","Add noodles and soy, toss and serve."]),
+r("sweet-sour-chicken","Sweet and sour chicken with rice","c/c2/Kung-pao-shanghai.jpg/500px-Kung-pao-shanghai.jpg",30,true,"balanced",610,33,["gluten","eggs"],
+ [["chicken breast",500,"g",MEAT],["cornflour",60,"g",DRY],["pineapple",200,"g",DRY],["peppers",2,"",PRODUCE],["vinegar",3,"tbsp",DRY],["rice",300,"g",DRY]],
+ ["Coat chicken in cornflour and fry until crisp.","Make the sauce with pineapple juice, vinegar and sugar.","Toss everything together, serve on rice."]),
+r("mapo-tofu","Mapo tofu with rice","8/88/Chen_Mapo_Tofu.jpg/500px-Chen_Mapo_Tofu.jpg",25,false,"balanced",450,26,[],
+ [["firm tofu",500,"g",DRY],["pork mince",200,"g",MEAT],["chilli bean paste",2,"tbsp",DRY],["spring onions",4,"",PRODUCE],["rice",300,"g",DRY],["garlic",3,"cloves",PRODUCE]],
+ ["Fry the mince with garlic and chilli paste.","Slide in cubed tofu, simmer gently 8 minutes.","Scatter spring onion, serve with rice."]),
+r("kung-pao-chicken","Kung pao chicken with rice","c/c2/Kung-pao-shanghai.jpg/500px-Kung-pao-shanghai.jpg",25,false,"high-protein",560,38,["nuts"],
+ [["chicken breast",600,"g",MEAT],["peanuts",80,"g",DRY],["dried chillies",6,"",DRY],["soy sauce",3,"tbsp",DRY],["spring onions",4,"",PRODUCE],["rice",300,"g",DRY]],
+ ["Fry diced chicken until browned.","Add chillies, peanuts and sauce.","Toss for a minute, serve with rice."]),
+r("chicken-enchiladas","Chicken enchiladas with salad","e/ec/Enchilada_Rice_Beans.jpg/500px-Enchilada_Rice_Beans.jpg",45,true,"hearty",660,38,["gluten","dairy"],
+ [["chicken breast",500,"g",MEAT],["tortillas",8,"",DRY],["passata",500,"g",DRY],["cheese",150,"g",DAIRY],["black beans",400,"g",DRY],["cumin",2,"tsp",DRY],["salad leaves",100,"g",PRODUCE]],
+ ["Poach and shred the chicken, mix with beans.","Roll into tortillas, line them up in a dish.","Sauce and cheese over, bake 25 minutes.","Serve with salad leaves."]),
+r("gnocchi-tomato","Gnocchi in tomato sauce","8/86/Gnocchi_di_ricotta_burro_e_salvia.jpg/500px-Gnocchi_di_ricotta_burro_e_salvia.jpg",25,true,"balanced",550,17,["gluten","dairy"],
+ [["gnocchi",800,"g",DRY],["passata",500,"g",DRY],["mozzarella",125,"g",DAIRY],["garlic",2,"cloves",PRODUCE],["basil",1,"handful",PRODUCE],["olive oil",2,"tbsp",DRY]],
+ ["Simmer passata with garlic 10 minutes.","Boil gnocchi until they float.","Combine, tear mozzarella over, grill 5 minutes."]),
+r("veg-frittata","Vegetable frittata","7/77/Frittata02.jpg/500px-Frittata02.jpg",25,true,"light",420,24,["eggs","dairy"],
+ [["eggs",8,"",DAIRY],["potatoes",400,"g",PRODUCE],["courgette",1,"",PRODUCE],["cheese",80,"g",DAIRY],["onion",1,"",PRODUCE],["olive oil",2,"tbsp",DRY]],
+ ["Fry sliced potato and onion until soft.","Pour beaten egg over, cook gently 8 minutes.","Cheese on top, finish under the grill."]),
+r("cheese-omelette","Cheese omelette with potatoes and salad","4/4d/Gorgonzola_%2B_Bacon_Omelette_%40_Omelegg_%40_Amsterdam_%2816600947041%29.jpg/500px-Gorgonzola_%2B_Bacon_Omelette_%40_Omelegg_%40_Amsterdam_%2816600947041%29.jpg",15,true,"light",400,26,["eggs","dairy"],
+ [["eggs",8,"",DAIRY],["cheese",120,"g",DAIRY],["butter",30,"g",DAIRY],["salad leaves",100,"g",PRODUCE],["tomato",2,"",PRODUCE],["new potatoes",500,"g",PRODUCE]],
+ ["Beat the eggs with salt.","Butter in a hot pan, eggs in, drag the edges inward.","Boil the new potatoes while the pan heats.","Cheese on one half, fold, slide out. Potatoes and salad alongside."]),
+r("quiche-lorraine","Quiche lorraine with salad","2/29/Quiche.jpg/500px-Quiche.jpg",50,true,"hearty",640,26,["gluten","eggs","dairy"],
+ [["shortcrust pastry",375,"g",FREEZER],["bacon",200,"g",MEAT],["eggs",4,"",DAIRY],["cream",300,"ml",DAIRY],["cheese",100,"g",DAIRY],["salad leaves",100,"g",PRODUCE]],
+ ["Line a tin with pastry, blind bake 15 minutes.","Fry the bacon, scatter it in with the cheese.","Egg and cream over, bake 30 minutes."]),
+r("homemade-pizza","Homemade pizza","9/91/Pizza-3007395.jpg/500px-Pizza-3007395.jpg",40,true,"hearty",680,28,["gluten","dairy"],
+ [["pizza bases",4,"",DRY],["passata",300,"g",DRY],["mozzarella",250,"g",DAIRY],["basil",1,"handful",PRODUCE],["olive oil",2,"tbsp",DRY],["ham",100,"g",MEAT]],
+ ["Heat the oven as hot as it goes.","Thin layer of sauce, then toppings.","Bake 10 minutes until blistered."]),
+r("pork-souvlaki","Pork souvlaki with roast potatoes","c/cd/%CE%95%CE%BB%CE%BB%CE%B7%CE%BD%CE%B9%CE%BA%CF%8C_%CE%A3%CE%BF%CF%85%CE%B2%CE%BB%CE%AC%CE%BA%CE%B9_-_panoramio.jpg/500px-%CE%95%CE%BB%CE%BB%CE%B7%CE%BD%CE%B9%CE%BA%CF%8C_%CE%A3%CE%BF%CF%85%CE%B2%CE%BB%CE%AC%CE%BA%CE%B9_-_panoramio.jpg",30,true,"high-protein",590,43,[],
+ [["pork shoulder",700,"g",MEAT],["lemon",2,"",PRODUCE],["oregano",2,"tsp",DRY],["potatoes",600,"g",PRODUCE],["olive oil",3,"tbsp",DRY],["tomato",3,"",PRODUCE]],
+ ["Cube the pork, marinate in lemon, oil and oregano.","Skewer and grill 15 minutes, turning.","Serve with roast potatoes and tomato salad."]),
+r("chicken-schnitzel","Chicken schnitzel with potatoes","2/22/Breitenlesau_Krug_Br%C3%A4u_Schnitzel.JPG/500px-Breitenlesau_Krug_Br%C3%A4u_Schnitzel.JPG",30,true,"high-protein",620,45,["gluten","eggs"],
+ [["chicken breast",4,"",MEAT],["breadcrumbs",150,"g",DRY],["eggs",2,"",DAIRY],["flour",80,"g",DRY],["lemon",1,"",PRODUCE],["potatoes",600,"g",PRODUCE]],
+ ["Bash the chicken flat between two sheets.","Flour, egg, breadcrumbs.","Fry 3 minutes a side. Lemon over the top."]),
+r("bangers-and-mash","Bangers and mash","9/9c/Sausage_and_mash_with_peas.jpg/500px-Sausage_and_mash_with_peas.jpg",35,true,"hearty",700,30,["gluten","dairy"],
+ [["sausages",8,"",MEAT],["potatoes",900,"g",PRODUCE],["butter",50,"g",DAIRY],["onion",2,"",PRODUCE],["frozen peas",200,"g",FREEZER],["gravy granules",3,"tbsp",DRY]],
+ ["Roast the sausages 25 minutes.","Mash the potatoes with butter.","Slow-fry onions into the gravy, peas alongside."]),
+r("fish-pie","Fish pie","6/6b/Fish_Pie.jpg/500px-Fish_Pie.jpg",50,true,"hearty",620,38,["fish","dairy"],
+ [["fish pie mix",600,"g",MEAT],["potatoes",900,"g",PRODUCE],["milk",400,"ml",DAIRY],["butter",50,"g",DAIRY],["frozen peas",150,"g",FREEZER],["flour",40,"g",DRY]],
+ ["Make a white sauce with milk, butter and flour.","Fold in the raw fish and peas, tip into a dish.","Mash on top, bake 30 minutes at 190C."]),
+r("fish-and-chips","Oven fish and chips","f/ff/Fish_and_chips_blackpool.jpg/500px-Fish_and_chips_blackpool.jpg",40,true,"hearty",660,35,["fish","gluten"],
+ [["breaded cod",4,"fillets",FREEZER],["potatoes",900,"g",PRODUCE],["frozen peas",300,"g",FREEZER],["lemon",1,"",PRODUCE],["olive oil",3,"tbsp",DRY]],
+ ["Cut potatoes into chips, oil and salt, roast 30 minutes.","Fish in for the last 20 minutes.","Mushy peas and a lemon wedge."]),
+r("loaded-baked-potato","Loaded baked potatoes","9/93/BakedPotatoWithButter.jpg/500px-BakedPotatoWithButter.jpg",60,true,"balanced",520,22,["dairy"],
+ [["baking potatoes",4,"",PRODUCE],["cheese",150,"g",DAIRY],["baked beans",800,"g",DRY],["butter",40,"g",DAIRY],["spring onions",3,"",PRODUCE]],
+ ["Prick, oil and salt the potatoes; bake 55 minutes.","Warm the beans.","Split, butter, load up with beans and cheese."]),
+r("mac-and-cheese","Macaroni cheese with broccoli","4/44/Original_Mac_n_Cheese_.jpg/500px-Original_Mac_n_Cheese_.jpg",35,true,"hearty",690,27,["gluten","dairy"],
+ [["macaroni",400,"g",DRY],["cheese",250,"g",DAIRY],["milk",600,"ml",DAIRY],["butter",50,"g",DAIRY],["flour",50,"g",DRY],["mustard",1,"tsp",DRY],["broccoli",300,"g",PRODUCE]],
+ ["Boil the macaroni.","Butter, flour, milk into a sauce; melt in the cheese.","Combine, bake 15 minutes for a crust.","Steam the broccoli while it bakes."]),
+r("pierogi","Pierogi with onions","0/0f/Pierogi_z_mas%C5%82em_-_2023.03.31.jpg/500px-Pierogi_z_mas%C5%82em_-_2023.03.31.jpg",55,true,"hearty",640,20,["gluten","eggs","dairy"],
+ [["flour",400,"g",DRY],["eggs",1,"",DAIRY],["potatoes",500,"g",PRODUCE],["cheese",150,"g",DAIRY],["onion",2,"",PRODUCE],["butter",50,"g",DAIRY]],
+ ["Make a soft dough, rest it 20 minutes.","Fill circles with mashed potato and cheese, seal.","Boil until they float, then fry in buttery onions."]),
+r("coq-au-vin","Coq au vin with potatoes","5/5a/Gourmet_coq_au_vin.jpg/500px-Gourmet_coq_au_vin.jpg",70,false,"hearty",680,44,[],
+ [["chicken thighs",8,"",MEAT],["bacon",150,"g",MEAT],["red wine",400,"ml",DRY],["mushrooms",250,"g",PRODUCE],["shallots",8,"",PRODUCE],["potatoes",700,"g",PRODUCE]],
+ ["Brown the bacon, then the chicken.","Shallots and mushrooms in, wine over.","Lid on, oven 50 minutes. Serve with boiled potatoes."]),
+r("lentil-soup","Lentil soup with crusty bread","6/61/EgFoodLentilSoup.jpg/500px-EgFoodLentilSoup.jpg",35,true,"light",350,19,[],
+ [["red lentils",300,"g",DRY],["carrot",3,"",PRODUCE],["celery",2,"sticks",PRODUCE],["onion",1,"",PRODUCE],["stock cube",2,"",DRY],["cumin",2,"tsp",DRY],["crusty bread",1,"loaf",DRY]],
+ ["Soften the chopped vegetables with cumin.","Add lentils and stock, simmer 25 minutes.","Blitz half of it for body.","Serve with crusty bread."]),
+r("tortellini-tomato","Tortellini in tomato sauce","4/42/Tortellini_Bolognesi.jpg/500px-Tortellini_Bolognesi.jpg",20,true,"balanced",580,24,["gluten","eggs","dairy"],
+ [["fresh tortellini",600,"g",DAIRY],["passata",500,"g",DRY],["garlic",2,"cloves",PRODUCE],["parmesan",60,"g",DAIRY],["basil",1,"handful",PRODUCE],["olive oil",2,"tbsp",DRY]],
+ ["Simmer passata with garlic and oil 12 minutes.","Boil tortellini 3 minutes.","Combine, parmesan and basil over."]),
+r("couscous-veg","Roast vegetable couscous","0/0c/Moroccan_cuscus%2C_from_Casablanca%2C_September_2018.jpg/500px-Moroccan_cuscus%2C_from_Casablanca%2C_September_2018.jpg",25,true,"light",420,13,["gluten"],
+ [["couscous",300,"g",DRY],["courgette",2,"",PRODUCE],["peppers",2,"",PRODUCE],["red onion",1,"",PRODUCE],["chickpeas",400,"g",DRY],["lemon",1,"",PRODUCE]],
+ ["Roast the chopped vegetables 20 minutes.","Pour boiling stock over the couscous, cover 5 minutes.","Fork together with chickpeas and lemon."]),
+r("beef-burgers","Beef burgers with potato wedges","0/0b/RedDot_Burger.jpg/500px-RedDot_Burger.jpg",25,true,"high-protein",700,40,["gluten"],
+ [["beef mince",600,"g",MEAT],["burger buns",4,"",DRY],["lettuce",1,"",PRODUCE],["tomato",2,"",PRODUCE],["red onion",1,"",PRODUCE],["potatoes",600,"g",PRODUCE]],
+ ["Shape loose patties, thumbprint in the middle.","Roast potato wedges 25 minutes.","Fry burgers 4 minutes a side, build in the buns."]),
+r("salmon-fishcakes","Salmon fishcakes with salad","f/fb/Fish_cakes_food_dinner.jpg/500px-Fish_cakes_food_dinner.jpg",30,true,"high-protein",540,33,["fish","gluten","eggs"],
+ [["salmon fillets",400,"g",MEAT],["potatoes",600,"g",PRODUCE],["breadcrumbs",120,"g",DRY],["eggs",1,"",DAIRY],["spring onions",3,"",PRODUCE],["salad leaves",100,"g",PRODUCE]],
+ ["Mash cooked potato with flaked salmon and spring onion.","Shape into cakes, egg and breadcrumb them.","Fry 3 minutes a side, salad alongside."]),
+r("tuna-pasta-bake","Tuna pasta bake with green beans","https://commons.wikimedia.org/wiki/Special:FilePath/Tuna_Casserole2.jpg?width=500",40,true,"hearty",660,34,["fish","gluten","dairy"],
+ [["pasta",400,"g",DRY],["tinned tuna",320,"g",DRY],["sweetcorn",200,"g",DRY],["cheese",150,"g",DAIRY],["milk",500,"ml",DAIRY],["flour",40,"g",DRY],["green beans",200,"g",PRODUCE]],
+ ["Boil the pasta, make a cheese sauce.","Stir in tuna and sweetcorn.","Into a dish, cheese on top, bake 20 minutes.","Boil the green beans for the last 5 minutes."]),
+r("chicken-parmigiana","Chicken parmigiana with salad","1/17/Chicken_parm_at_a_diner.jpg/500px-Chicken_parm_at_a_diner.jpg",45,true,"hearty",720,48,["gluten","eggs","dairy"],
+ [["chicken breast",4,"",MEAT],["breadcrumbs",150,"g",DRY],["eggs",2,"",DAIRY],["passata",400,"g",DRY],["mozzarella",125,"g",DAIRY],["pasta",300,"g",DRY],["salad leaves",100,"g",PRODUCE]],
+ ["Breadcrumb and fry the flattened chicken.","Sauce and mozzarella on top.","Bake 20 minutes, serve with pasta and a few salad leaves."]),
+r("jambalaya","Jambalaya","e/e0/Homemade_Jambalaya.JPG/500px-Homemade_Jambalaya.JPG",45,false,"balanced",610,35,["fish"],
+ [["chicken thighs",400,"g",MEAT],["chorizo",150,"g",MEAT],["prawns",200,"g",MEAT],["rice",300,"g",DRY],["peppers",2,"",PRODUCE],["cajun spice",2,"tbsp",DRY]],
+ ["Brown chicken and chorizo.","Peppers and spice in, then rice and stock.","Simmer 20 minutes, prawns in at the end."]),
+];
+
+let RECIPES = BUILTIN;   // replaced by recipes.csv when it can be loaded
+
+const DAYS = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const PREFS_KEY = "mealplanner.prefs";
+const WEEK_KEY  = "mealplanner.week";
+const HIST_KEY  = "mealplanner.history";
+const RATE_KEY  = "mealplanner.ratings";
+const MEMORY = 14;   // the last 14 dinners planned stay off the menu
+
+function $(id){ return document.getElementById(id); }
+
+function readPrefs(){
+  const allergies = [];
+  document.querySelectorAll('#allergies .chip').forEach(function(b){
+    if(b.getAttribute('aria-pressed') === 'true') allergies.push(b.dataset.a);
+  });
+  let goal = 'balanced';
+  document.querySelectorAll('#goal .chip').forEach(function(b){
+    if(b.getAttribute('aria-pressed') === 'true') goal = b.dataset.g;
+  });
+  const kidAges = $('kids').value.split(',')
+    .map(function(s){ return parseInt(s.trim(), 10); })
+    .filter(function(n){ return !isNaN(n); });
+  const adults = parseInt($('adults').value, 10) || 1;
+  const auto = householdPortions(adults, kidAges);
+  const typed = parseFloat($('portions').value);
+  return {
+    adults: adults,
+    portions: (!isNaN(typed) && typed > 0) ? typed : auto,
+    autoPortions: auto,
+    kidAges: kidAges,
+    dislikes: $('dislikes').value.toLowerCase().split(',').map(function(s){return s.trim();}).filter(Boolean),
+    kidAge: kidAges.length ? Math.min.apply(null, kidAges) : NaN,
+    allergies: allergies,
+    goal: goal,
+    minutes: parseInt($('mins').value, 10)
+  };
+}
+
+function householdPortions(adults, kidAges){
+  let n = adults;
+  kidAges.forEach(function(age){ n += (age < 12 ? 0.5 : 1); });
+  return Math.max(1, n);
+}
+
+let lastAuto = null;
+
+function syncPortions(){
+  const kidAges = $('kids').value.split(',').map(function(s){ return parseInt(s.trim(), 10); })
+    .filter(function(n){ return !isNaN(n); });
+  const auto = householdPortions(parseInt($('adults').value, 10) || 1, kidAges);
+  const box = $('portions');
+  if(lastAuto === null || box.value === '' || parseFloat(box.value) === lastAuto){
+    box.value = auto;
+  }
+  lastAuto = auto;
+  $('portionhint').textContent = parseFloat(box.value) === auto
+    ? 'That is your household. Change it if you have guests.'
+    : 'Your household is ' + auto + ' — you have set it to ' + box.value + '.';
+}
+
+function savePrefs(){ syncPortions(); localStorage.setItem(PREFS_KEY, JSON.stringify(readPrefs())); showReading(); }
+
+function showReading(){
+  const p = readPrefs();
+  const adults = p.adults + (p.adults === 1 ? ' adult' : ' adults');
+  let kids;
+  if(p.kidAges.length === 0){
+    kids = 'no children — nothing will be filtered for kid-friendliness';
+  } else if(p.kidAges.length === 1){
+    kids = '1 child, aged ' + p.kidAges[0];
+  } else {
+    const list = p.kidAges.slice(0, -1).join(', ') + ' and ' + p.kidAges[p.kidAges.length - 1];
+    kids = p.kidAges.length + ' children, aged ' + list;
+  }
+  let note = adults.charAt(0).toUpperCase() + adults.slice(1) + ' and ' + kids + '.';
+  if(p.kidAges.length && p.kidAge < 12){
+    note += ' Because the youngest is ' + p.kidAge + ', we only pick kid-friendly dinners.';
+  } else if(p.kidAges.length){
+    note += ' All ' + (p.kidAges.length === 1 ? 'is' : 'are') + ' 12 or over, so nothing is filtered out.';
+  }
+  $('reading').textContent = note;
+}
+
+function restorePrefs(){
+  const raw = localStorage.getItem(PREFS_KEY);
+  if(!raw) return;
+  const p = JSON.parse(raw);
+  $('adults').value = p.adults || 2;
+  $('kids').value = (p.kidAges || []).join(', ');
+  if(p.portions) $('portions').value = p.portions;
+  $('dislikes').value = (p.dislikes || []).join(', ');
+  $('mins').value = p.minutes || 40;
+  $('minsout').textContent = ($('mins').value) + ' minutes';
+  document.querySelectorAll('#allergies .chip').forEach(function(b){
+    b.setAttribute('aria-pressed', (p.allergies || []).indexOf(b.dataset.a) > -1 ? 'true' : 'false');
+  });
+  document.querySelectorAll('#goal .chip').forEach(function(b){
+    b.setAttribute('aria-pressed', b.dataset.g === (p.goal || 'balanced') ? 'true' : 'false');
+  });
+}
+
+function filterRecipes(prefs){
+  const needsKid = !isNaN(prefs.kidAge) && prefs.kidAge < 12;
+  const banned = bannedIds();
+  return RECIPES.filter(function(rec){
+    if(banned.indexOf(rec.id) > -1) return false;
+    for(const a of prefs.allergies){ if(rec.allergens.indexOf(a) > -1) return false; }
+    if(rec.minutes > prefs.minutes) return false;
+    if(needsKid && !rec.kidFriendly) return false;
+    for(const d of prefs.dislikes){
+      for(const w of dislikeWords(d)){
+        if(rec.name.toLowerCase().indexOf(w) > -1) return false;
+        for(const i of rec.ingredients){ if(i.item.toLowerCase().indexOf(w) > -1) return false; }
+      }
+    }
+    return true;
+  });
+}
+
+function score(rec, prefs){
+  let s = Math.random() * 2;
+  if(ratings()[rec.id] === 'up') s += 4;   // loved dinners come back as soon as they may
+  if(prefs.goal === 'balanced' && rec.profile === 'balanced') s += 3;
+  if(prefs.goal === 'light'){
+    if(rec.profile === 'light') s += 3;
+    if(rec.kcal <= 450) s += 2;
+  }
+  if(prefs.goal === 'protein'){
+    if(rec.profile === 'high-protein') s += 3;
+    if(rec.protein >= 35) s += 2;
+  }
+  return s;
+}
+
+function availableNow(prefs){
+  const avoid = recentIds();
+  return filterRecipes(prefs).filter(function(rec){ return avoid.indexOf(rec.id) === -1; });
+}
+
+function planWeek(prefs){
+  const pool = availableNow(prefs);
+  if(pool.length < 7) return null;
+  const picked = pool.slice().sort(function(a,b){ return score(b, prefs) - score(a, prefs); }).slice(0, 12);
+  picked.sort(function(){ return Math.random() - 0.5; });
+  const week = picked.slice(0, 7).map(function(rec, i){ return { day: DAYS[i], id: rec.id }; });
+  localStorage.setItem(WEEK_KEY, JSON.stringify(week));
+  recordWeek(week);
+  return week;
+}
+
+const BASE_SERVES = 4;
+
+function portions(prefs){ return prefs.portions || householdPortions(prefs.adults, prefs.kidAges); }
+
+function tidy(n){
+  return (Math.round(n * 10) / 10).toString().replace(/\.0$/, '');
+}
+
+function scaleQty(qty, unit, factor){
+  const v = qty * factor;
+  if(unit === 'g' || unit === 'ml') return Math.max(5, Math.round(v / 5) * 5);
+  if(unit === 'kg' || unit === 'l')  return tidy(Math.max(0.1, Math.round(v * 10) / 10));
+  return tidy(Math.max(0.5, Math.round(v * 2) / 2));
+}
+
+// Spoonable things read better as spoons than as "6 g". Grams per tablespoon.
+const PER_TBSP = { "flour":8, "cornflour":8, "ground almonds":6, "ginger":6, "butter":14,
+                   "olive oil":15, "sesame oil":14, "honey":21, "peanut butter":16,
+                   "soy sauce":15, "vinegar":15, "tahini":15, "kecap manis":15 };
+
+function asSpoons(item, qty, unit){
+  const per = PER_TBSP[item.toLowerCase()];
+  if(!per || (unit !== 'g' && unit !== 'ml')) return null;
+  const tbsp = qty / per;
+  if(tbsp < 1){
+    const tsp = Math.max(0.5, Math.round(tbsp * 3 * 2) / 2);
+    return { qty: tidy(tsp), unit: tsp === 1 ? 'tsp' : 'tsp' };
+  }
+  if(tbsp > 4) return null;   // past four spoons, weighing it is easier
+  const t = Math.round(tbsp * 2) / 2;
+  return { qty: tidy(t), unit: 'tbsp' };
+}
+
+function amountText(i, factor){
+  const spoons = asSpoons(i.item, i.qty * factor, i.unit);
+  if(spoons) return spoons.qty + ' ' + spoons.unit + ' ' + i.item;
+  // whole things stay whole: 2 eggs and 2 cloves, not 1.5 of either
+  const one = unitKey(i.unit);
+  if(COUNTABLE.indexOf(one) > -1){
+    const n = Math.ceil(i.qty * factor);
+    return n + (one ? ' ' + unitLabel(one, n) : '') + ' ' + i.item;
+  }
+  const q = scaleQty(i.qty, i.unit, factor);
+  return q + (i.unit ? ' ' + i.unit : '') + ' ' + i.item;
+}
+
+// "cloves" and "clove" are the same aisle line; a shopping list rounds whole
+// items up, because nobody buys 1.5 peppers.
+const UNIT_SINGULAR = { cloves:"clove", sprigs:"sprig", slices:"slice", sticks:"stick",
+                        fillets:"fillet", handfuls:"handful", loaves:"loaf", bags:"bag", packs:"pack" };
+
+function unitKey(unit){ return UNIT_SINGULAR[unit] || unit; }
+
+// things you buy whole: round up. Measures (g, ml, tbsp) keep their fractions.
+const COUNTABLE = ["", "clove", "slice", "stick", "fillet", "loaf", "bag", "pack", "sprig"];
+
+function unitLabel(unit, amount){
+  const one = unitKey(unit);
+  if(!one || amount === 1) return one;
+  const plural = { clove:"cloves", sprig:"sprigs", slice:"slices", stick:"sticks",
+                   fillet:"fillets", handful:"handfuls", loaf:"loaves", bag:"bags", pack:"packs" };
+  return plural[one] || one;
+}
+
+// One row per ingredient means every unit must reduce to a common one.
+// Real recipes say "chicken breast" in one and "chicken breasts" in the next.
+// One row per ingredient means matching them up.
+const NEVER_SINGULAR = ["couscous","hummus","molasses","asparagus","watercress","cress",
+                        "swiss chard","bass","haddock","plaice","tapas"];
+
+function singular(name){
+  const n = name.toLowerCase().trim();
+  if(NEVER_SINGULAR.indexOf(n) > -1) return n;
+  if(/(oes)$/.test(n))            return n.slice(0, -2);   // tomatoes -> tomato
+  if(/[^aeiou]ies$/.test(n))      return n.slice(0, -3) + 'y';
+  if(/(ses|shes|ches|xes)$/.test(n)) return n.slice(0, -2);
+  if(/[^s]s$/.test(n))            return n.slice(0, -1);
+  return n;
+}
+
+const PIECE_GRAMS = { "chicken thighs":120, "chicken breast":175, "salmon fillets":130,
+                      "breaded cod":120, "sausages":60 };
+const VAGUE_GRAMS = { "handful":15, "pinch":1, "sprig":2 };
+const ML_PER_TBSP = 15;
+// liquids are bought and measured by volume, never by weight
+const LIQUIDS = ["olive oil","sesame oil","soy sauce","vinegar","honey","kecap manis",
+                 "coconut milk","milk","cream","red wine","fish sauce"];
+
+// Reduce one ingredient line to { grams } or { ml } or { tsp } or { count }.
+function measure(item, qty, unit){
+  const name = item.toLowerCase();
+  const liquid = LIQUIDS.indexOf(name) > -1;
+  const perTbsp = PER_TBSP[name];
+  const u = unitKey(unit);
+  if(liquid){
+    if(u === 'tbsp') return { ml: qty * ML_PER_TBSP };
+    if(u === 'tsp')  return { ml: qty * ML_PER_TBSP / 3 };
+    if(u === 'l')    return { ml: qty * 1000 };
+    if(u === 'ml' || u === 'g') return { ml: qty };
+  }
+  if(u === 'g')   return { grams: qty };
+  if(u === 'kg')  return { grams: qty * 1000 };
+  if(u === 'ml')  return { ml: qty };
+  if(u === 'l')   return { ml: qty * 1000 };
+  if(u === 'tbsp') return perTbsp ? { grams: qty * perTbsp } : { tsp: qty * 3 };
+  if(u === 'tsp')  return perTbsp ? { grams: qty * perTbsp / 3 } : { tsp: qty };
+  if(VAGUE_GRAMS[u] !== undefined) return { grams: qty * VAGUE_GRAMS[u] };
+  if(PIECE_GRAMS[name] !== undefined && (u === '' || u === 'fillet'))
+    return { grams: qty * PIECE_GRAMS[name] };
+  return { count: qty, unit: u };
+}
+
+// Turn the total back into something a person would write on a list.
+function amountLabel(item, total){
+  if(total.grams !== undefined){
+    const spoons = asSpoons(item, total.grams, 'g');
+    if(spoons) return spoons.qty + ' ' + spoons.unit;
+    if(total.grams >= 1000) return tidy(Math.round(total.grams / 100) / 10) + ' kg';
+    return Math.max(5, Math.round(total.grams / 5) * 5) + ' g';
+  }
+  if(total.ml !== undefined){
+    if(total.ml <= 4 * ML_PER_TBSP) return tidy(Math.round(total.ml / ML_PER_TBSP * 2) / 2) + ' tbsp';
+    return Math.round(total.ml / 5) * 5 + ' ml';
+  }
+  if(total.tsp !== undefined){
+    return total.tsp >= 3
+      ? tidy(Math.round(total.tsp / 3 * 2) / 2) + ' tbsp'
+      : tidy(Math.round(total.tsp * 2) / 2) + ' tsp';
+  }
+  const n = Math.ceil(total.count);
+  return n + (total.unit ? ' ' + unitLabel(total.unit, n) : '');
+}
+
+const AISLE_ORDER = ["produce", "meat and fish", "dairy", "dry goods", "freezer"];
+
+function shoppingList(week, prefs){
+  const factor = portions(prefs) / BASE_SERVES;
+  const lines = {};
+  week.forEach(function(slot){
+    const rec = byId(slot.id);
+    if(!rec) return;
+    rec.ingredients.forEach(function(i){
+      const key = singular(i.item);
+      if(!lines[key]) lines[key] = { item: singular(i.item), aisle: i.aisle, total: {}, dishes: [] };
+      const m = measure(i.item, i.qty * factor, i.unit);
+      Object.keys(m).forEach(function(k){
+        if(k === 'unit'){ lines[key].total.unit = m.unit; return; }
+        lines[key].total[k] = (lines[key].total[k] || 0) + m[k];
+      });
+      if(lines[key].dishes.indexOf(rec.name) === -1) lines[key].dishes.push(rec.name);
+    });
+  });
+
+  const byAisle = {};
+  Object.keys(lines).forEach(function(k){
+    const l = lines[k];
+    l.label = amountLabel(l.item, l.total);
+    if(!byAisle[l.aisle]) byAisle[l.aisle] = [];
+    byAisle[l.aisle].push(l);
+  });
+  Object.keys(byAisle).forEach(function(a){
+    byAisle[a].sort(function(x, y){ return x.item < y.item ? -1 : 1; });
+  });
+  return byAisle;
+}
+
+function shoppingText(week, prefs){
+  const list = shoppingList(week, prefs);
+  const out = ["Shopping list — " + tidy(portions(prefs)) + " grown-up portions", ""];
+  AISLE_ORDER.forEach(function(aisle){
+    if(!list[aisle]) return;
+    out.push(aisle.toUpperCase());
+    list[aisle].forEach(function(l){
+      out.push("- " + l.label + " " + l.item);
+    });
+    out.push("");
+  });
+  return out.join("\n").trim();
+}
+
+function servesText(prefs){
+  return 'Amounts for ' + tidy(portions(prefs)) + ' grown-up portions';
+}
+
+function ratings(){
+  try { return JSON.parse(localStorage.getItem(RATE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+
+function saveRatings(r){ localStorage.setItem(RATE_KEY, JSON.stringify(r)); }
+
+function rateDish(id, verdict){
+  const r = ratings();
+  if(r[id] === verdict) delete r[id];   // tapping the same thumb again clears it
+  else r[id] = verdict;
+  saveRatings(r);
+}
+
+function bannedIds(){
+  const r = ratings();
+  return Object.keys(r).filter(function(id){ return r[id] === 'down'; });
+}
+
+function today(){ return new Date().toISOString().slice(0, 10); }
+
+function daysSince(iso){
+  const then = new Date(iso + "T00:00:00");
+  const now  = new Date(today() + "T00:00:00");
+  return Math.round((now - then) / 86400000);
+}
+
+function history(){
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; }
+  catch(e){ return []; }
+}
+
+// The rolling memory: the last 14 dinners planned, newest last.
+function recent(){
+  return history().slice(-MEMORY);
+}
+
+function recentIds(){
+  return recent().map(function(h){ return h.id; });
+}
+
+function recordWeek(week){
+  const d = today();
+  const h = history();
+  week.forEach(function(slot){ h.push({ id: slot.id, date: d }); });
+  localStorage.setItem(HIST_KEY, JSON.stringify(h));
+}
+
+function prettyDate(iso){
+  return new Date(iso + "T00:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+function byId(id){ return RECIPES.filter(function(r){ return r.id === id; })[0]; }
+
+function renderWeek(week, prefs){
+  prefs = prefs || readPrefs();
+  const factor = portions(prefs) / BASE_SERVES;
+  const host = $('week');
+  host.innerHTML = '';
+
+  week.forEach(function(slot){
+    const rec = byId(slot.id);
+
+    const card = document.createElement('article');
+    card.className = 'dish';
+
+    const inner = document.createElement('div');
+    inner.className = 'inner';
+    inner.tabIndex = 0;
+    inner.setAttribute('role', 'button');
+    inner.setAttribute('aria-label', slot.day + ': ' + rec.name + '. Show the recipe.');
+
+    // ---- front ----
+    const front = document.createElement('div');
+    front.className = 'face front';
+    const shot = document.createElement('div');
+    shot.className = 'shot';
+    shot.textContent = rec.name;
+    if(rec.photo){
+      const img = document.createElement('img');
+      img.src = rec.photo;
+      img.alt = rec.name;
+      img.onerror = function(){ img.remove(); };
+      shot.appendChild(img);
+    }
+    const body = document.createElement('div');
+    body.className = 'body';
+    body.innerHTML =
+      '<div class="day">' + slot.day + '</div>' +
+      '<div class="name">' + rec.name + '</div>' +
+      '<p class="meta">' + rec.minutes + ' minutes</p>' +
+      '<p class="meta">' + rec.profile + ' &middot; ' + rec.kcal + ' kcal &middot; ' + rec.protein +
+        'g protein <span class="per">per person, roughly</span></p>' +
+      (rec.kidFriendly ? '<span class="tag">kid-friendly</span>' : '') +
+      '<div class="thumbs">' +
+        '<button class="thumb up" type="button" aria-label="We loved ' + rec.name + '">&#128077;</button>' +
+        '<button class="thumb down" type="button" aria-label="Never plan ' + rec.name + ' again">&#128078;</button>' +
+        '<span class="flip">recipe &#8635;</span>' +
+      '</div>';
+    front.appendChild(shot);
+    front.appendChild(body);
+
+    // ---- back ----
+    const back = document.createElement('div');
+    back.className = 'face back';
+    back.innerHTML =
+      '<h3>' + rec.name + '</h3>' +
+      '<p class="serves">' + servesText(prefs) + ' &middot; amounts are a good guess, not a tested recipe</p>' +
+      '<p class="label">You need</p><ul>' +
+      rec.ingredients.map(function(i){ return '<li>' + amountText(i, factor) + '</li>'; }).join('') +
+      '</ul>' +
+      '<p class="label">How</p><ol>' +
+      rec.steps.map(function(s){ return '<li>' + s + '</li>'; }).join('') +
+      '</ol>' +
+      (rec.source ? '<p class="src"><a href="' + rec.source + '" target="_blank" rel="noopener">' +
+        'the original recipe &#8599;</a></p>' : '') +
+      '<p class="flip">Tap to turn back &#8634;</p>';
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    card.appendChild(inner);
+
+    function flip(){
+      card.classList.toggle('flipped');
+      const open = card.classList.contains('flipped');
+      // grow the card to fit the recipe rather than hiding it behind a scrollbar
+      if(open){
+        const needed = back.scrollHeight + 14;
+        if(needed > card.clientHeight) card.style.height = needed + 'px';
+      } else {
+        card.style.height = '';
+      }
+      inner.setAttribute('aria-label', slot.day + ': ' + rec.name +
+        (open ? '. Showing the recipe.' : '. Show the recipe.'));
+    }
+    function paintVerdict(){
+      const verdict = ratings()[rec.id];
+      body.querySelector('.thumb.up').setAttribute('aria-pressed', verdict === 'up' ? 'true' : 'false');
+      body.querySelector('.thumb.down').setAttribute('aria-pressed', verdict === 'down' ? 'true' : 'false');
+      card.classList.toggle('liked', verdict === 'up');
+      card.classList.toggle('banned', verdict === 'down');
+    }
+    paintVerdict();
+
+    body.querySelectorAll('.thumb').forEach(function(btn){
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();          // a verdict must never flip the card
+        rateDish(rec.id, btn.classList.contains('up') ? 'up' : 'down');
+        paintVerdict();
+        renderVerdicts();
+      });
+    });
+
+    inner.addEventListener('click', flip);
+    inner.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flip(); }
+    });
+
+    host.appendChild(card);
+  });
+}
+
+function renderVerdicts(){
+  const host = $('verdicts');
+  const r = ratings();
+  const loved  = Object.keys(r).filter(function(id){ return r[id] === 'up'; });
+  const banned = Object.keys(r).filter(function(id){ return r[id] === 'down'; });
+
+  if(loved.length === 0 && banned.length === 0){ host.innerHTML = ''; return; }
+
+  function line(id, withUndo){
+    const rec = byId(id);
+    if(!rec) return '';
+    return '<li><b>' + rec.name + '</b>' +
+      (withUndo ? '<button class="undo" data-id="' + id + '">undo</button>' : '') + '</li>';
+  }
+
+  host.innerHTML =
+    '<h2>Hits and misses</h2>' +
+    '<div class="vgrid">' +
+      '<div class="vbox"><h3>&#128077; Plan these again</h3>' +
+        (loved.length
+          ? '<ul>' + loved.map(function(id){ return line(id, true); }).join('') + '</ul>'
+          : '<p class="vnote">Nothing yet. Give a dinner a thumbs up and it will come back as soon as the two weeks are up.</p>') +
+      '</div>' +
+      '<div class="vbox"><h3>&#128078; Never again</h3>' +
+        (banned.length
+          ? '<ul>' + banned.map(function(id){ return line(id, true); }).join('') +
+            '</ul><p class="vnote">Gone from future weeks. This week keeps what it already has.</p>'
+          : '<p class="vnote">Nothing banned. A thumbs down retires a dinner for good.</p>') +
+      '</div>' +
+    '</div>';
+
+  host.querySelectorAll('.undo').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const r2 = ratings();
+      delete r2[btn.dataset.id];
+      saveRatings(r2);
+      renderVerdicts();
+      const week = localStorage.getItem(WEEK_KEY);
+      if(week) renderWeek(JSON.parse(week));
+    });
+  });
+}
+
+function openSheet(){
+  const week = JSON.parse(localStorage.getItem(WEEK_KEY) || 'null');
+  if(!week) return;
+  const prefs = readPrefs();
+  const list = shoppingList(week, prefs);
+
+  let html = '<p class="vnote">Everything for the seven dinners, added up for ' +
+             tidy(portions(prefs)) + ' grown-up portions.</p>';
+  AISLE_ORDER.forEach(function(aisle){
+    if(!list[aisle]) return;
+    html += '<p class="aisle">' + aisle + '</p><ul class="shoplist">' +
+      list[aisle].map(function(l){
+        return '<li><span>' + l.item + '</span><span class="amt">' + l.label + '</span></li>';
+      }).join('') + '</ul>';
+  });
+  $('sheetbody').innerHTML = html;
+  $('copied').textContent = '';
+  $('sheet').hidden = false;
+}
+
+function closeSheet(){ $('sheet').hidden = true; }
+
+function copyList(){
+  const week = JSON.parse(localStorage.getItem(WEEK_KEY) || 'null');
+  if(!week) return;
+  const text = shoppingText(week, readPrefs());
+  function done(){ $('copied').textContent = 'Copied — paste it into WhatsApp.'; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else { fallback(); }
+  function fallback(){
+    const t = document.createElement('textarea');
+    t.value = text;
+    t.style.position = 'fixed';
+    t.style.opacity = '0';
+    document.body.appendChild(t);
+    t.select();
+    try { document.execCommand('copy'); done(); }
+    catch(e){ $('copied').textContent = 'Could not copy — select the list and copy it by hand.'; }
+    t.remove();
+  }
+}
+
+function buildPrintable(){
+  const week = JSON.parse(localStorage.getItem(WEEK_KEY) || 'null');
+  if(!week) return;
+  const prefs = readPrefs();
+  const factor = portions(prefs) / BASE_SERVES;
+  const list = shoppingList(week, prefs);
+
+  let page1 = '<div class="psheet"><h1>Shopping list</h1>' +
+    '<p class="plead">Seven dinners &middot; ' + tidy(portions(prefs)) + ' grown-up portions</p>';
+  AISLE_ORDER.forEach(function(aisle){
+    if(!list[aisle]) return;
+    page1 += '<p class="paisle">' + aisle + '</p><ul class="plist">' +
+      list[aisle].map(function(l){
+        return '<li>' + l.label + ' ' + l.item + '</li>';
+      }).join('') + '</ul>';
+  });
+  page1 += '</div>';
+
+  let page2 = '<div class="psheet"><h1>This week\'s recipes</h1>' +
+    '<p class="plead">Amounts for ' + tidy(portions(prefs)) +
+    ' grown-up portions &middot; a good guess, not a tested recipe</p>';
+  week.forEach(function(slot){
+    const rec = byId(slot.id);
+    if(!rec) return;
+    page2 += '<div class="precipe">' +
+      (rec.photo ? '<img src="' + rec.photo + '" alt="">' : '') +
+      '<h3>' + slot.day + ' &middot; ' + rec.name + '</h3>' +
+      '<p class="pmeta">' + rec.minutes + ' minutes &middot; ' + rec.profile + ' &middot; ' +
+        rec.kcal + ' kcal per person</p>' +
+      '<ul>' + rec.ingredients.map(function(i){ return '<li>' + amountText(i, factor) + '</li>'; }).join('') + '</ul>' +
+      '<ol>' + rec.steps.map(function(s){ return '<li>' + s + '</li>'; }).join('') + '</ol>' +
+      '</div>';
+  });
+  page2 += '</div>';
+
+  $('printable').innerHTML = page1 + page2;
+}
+
+function showAvoiding(){
+  const n = new Set(recentIds()).size;
+  $('avoiding').textContent = n === 0
+    ? "Nothing to avoid yet — this will be your first week."
+    : "Avoiding your last " + n + (n === 1 ? " dinner" : " dinners") +
+      (n < MEMORY ? "." : " — two full weeks.");
+}
+
+function renderRecent(){
+  const host = $('recent');
+  const rows = recent();
+  if(rows.length === 0){ host.innerHTML = ''; return; }
+
+  const newest = {};
+  rows.forEach(function(h){ if(!newest[h.id] || h.date > newest[h.id]) newest[h.id] = h.date; });
+
+  const items = Object.keys(newest)
+    .sort(function(a, b){ return newest[a] < newest[b] ? 1 : -1; })
+    .map(function(id){
+      const rec = byId(id);
+      if(!rec) return '';
+      const face = rec.photo
+        ? '<img src="' + rec.photo + '" alt="" onerror="this.outerHTML=\'<span class=&quot;dot&quot;></span>\'">'
+        : '<span class="dot"></span>';
+      return '<span class="pastitem">' + face + '<span><b>' + rec.name + '</b> &middot; ' +
+             prettyDate(newest[id]) + '</span></span>';
+    }).join('');
+
+  host.innerHTML =
+    '<h2>Recently planned</h2>' +
+    '<p class="why">The last ' + MEMORY + ' dinners stay off the menu. Each new week pushes the ' +
+      'oldest ones back onto it.</p>' +
+    '<div class="past">' + items + '</div>' +
+    '<div id="forgetbox"><button class="forget" id="forget">Forget my history and start fresh</button></div>';
+
+  const box = $('forgetbox');
+
+  $('forget').addEventListener('click', function(){
+    box.innerHTML = '<span class="confirm">Forget every dinner planned so far? ' +
+      '<button class="forget" id="forgetyes">yes, forget it</button> ' +
+      '<button class="forget" id="forgetno">keep it</button></span>';
+    $('forgetyes').addEventListener('click', function(){
+      localStorage.removeItem(HIST_KEY);
+      renderRecent();
+      showAvoiding();
+    });
+    $('forgetno').addEventListener('click', renderRecent);
+  });
+}
+
+// which single setting, loosened, would open up the most dinners?
+function bestRelaxation(prefs){
+  const now = availableNow(prefs).length;
+  const options = [];
+  prefs.allergies.forEach(function(a){
+    const p = Object.assign({}, prefs, { allergies: prefs.allergies.filter(function(x){ return x !== a; }) });
+    options.push({ gain: availableNow(p).length - now, text: 'untick the ' + a + ' allergy' });
+  });
+  if(prefs.dislikes.length){
+    options.push({ gain: availableNow(Object.assign({}, prefs, { dislikes: [] })).length - now,
+                   text: 'clear the dislikes' });
+  }
+  options.push({ gain: availableNow(Object.assign({}, prefs, { minutes: prefs.minutes + 20 })).length - now,
+                 text: 'allow ' + (prefs.minutes + 20) + ' minutes to cook instead of ' + prefs.minutes });
+  if(prefs.kidAge < 12){
+    options.push({ gain: filterRecipes(Object.assign({}, prefs, { kidAge: NaN })).filter(function(r){
+                     return recentIds().indexOf(r.id) === -1; }).length - now,
+                   text: 'drop the kid-friendly rule' });
+  }
+  options.sort(function(a, b){ return b.gain - a.gain; });
+  return options[0];
+}
+
+function tooFew(prefs){
+  const left = availableNow(prefs).length;
+  const blocked = filterRecipes(prefs).length - left;
+  const best = bestRelaxation(prefs);
+  let msg = 'Only ' + left + (left === 1 ? ' dinner' : ' dinners') +
+    ' fit these settings, and a week needs seven.';
+  if(blocked > 0){
+    msg += ' ' + blocked + ' more ' + (blocked === 1 ? 'is' : 'are') +
+           ' held back as one of your last ' + MEMORY + ' dinners.';
+  }
+  const banned = bannedIds().length;
+  if(banned > 0){
+    msg += ' ' + banned + (banned === 1 ? ' dinner is' : ' dinners are') + ' banned by a thumbs down.';
+  }
+  if(best && best.gain > 0){
+    msg += ' The biggest difference: ' + best.text + ' — that would add ' + best.gain + '.';
+  }
+  $('message').innerHTML = '<div class="warn">' + msg + '</div>';
+  $('week').innerHTML = '';
+}
+
+document.querySelectorAll('.chip').forEach(function(b){
+  b.addEventListener('click', function(){
+    if(b.parentElement.id === 'goal'){
+      b.parentElement.querySelectorAll('.chip').forEach(function(o){ o.setAttribute('aria-pressed','false'); });
+      b.setAttribute('aria-pressed','true');
+    } else {
+      b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+    }
+    savePrefs();
+  });
+});
+
+$('mins').addEventListener('input', function(){
+  $('minsout').textContent = $('mins').value + ' minutes';
+  savePrefs();
+});
+['adults','kids','dislikes','portions'].forEach(function(id){
+  $(id).addEventListener('input', savePrefs);
+  $(id).addEventListener('change', savePrefs);
+});
+
+$('shopbtn').addEventListener('click', openSheet);
+$('closesheet').addEventListener('click', closeSheet);
+$('copybtn').addEventListener('click', copyList);
+$('sheet').addEventListener('click', function(e){ if(e.target === $('sheet')) closeSheet(); });
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeSheet(); });
+$('printbtn').addEventListener('click', function(){ buildPrintable(); window.print(); });
+
+$('plan').addEventListener('click', function(){
+  savePrefs();
+  const prefs = readPrefs();
+  const week = planWeek(prefs);
+  if(!week){ tooFew(prefs); renderRecent(); return; }
+  $('message').innerHTML = '';
+  renderWeek(week);
+  showAvoiding();
+  renderRecent();
+  renderVerdicts();
+  $('actions').hidden = false;
+  if(window.innerWidth <= 1080){ $('week').scrollIntoView({behavior:'smooth', block:'start'}); }
+});
+
+// ---------------------------------------------------------------- recipes.csv
+// The recipes live in a spreadsheet next to this file. Opened through a web
+// server (or GitHub Pages) the app loads all of them; opened by double-clicking
+// the file, the browser blocks that read and the built-in pool is used instead.
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', quoted = false;
+  for(let i = 0; i < text.length; i++){
+    const ch = text[i];
+    if(quoted){
+      if(ch === '"' && text[i+1] === '"'){ field += '"'; i++; }
+      else if(ch === '"'){ quoted = false; }
+      else field += ch;
+    } else if(ch === '"'){ quoted = true; }
+    else if(ch === ','){ row.push(field); field = ''; }
+    else if(ch === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+    else if(ch !== '\r'){ field += ch; }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  const head = rows.shift();
+  return rows.filter(function(r){ return r.length === head.length; }).map(function(r){
+    const o = {};
+    head.forEach(function(h, i){ o[h] = r[i]; });
+    return o;
+  });
+}
+
+function rowToRecipe(row){
+  const ings = row.ingredients.split(';').map(function(part){
+    const bits = part.split('|');
+    return [bits[2], parseFloat(bits[0]), bits[1], bits[3]];
+  }).filter(function(x){ return x[0]; });
+
+  return {
+    id: row.id,
+    name: row.name,
+    photo: row.photo,
+    source: row.source,
+    cuisine: row.cuisine,
+    minutes: parseInt(row.minutes_estimated, 10),
+    kcal: parseInt(row.kcal_estimated, 10),
+    protein: parseInt(row.protein_estimated, 10),
+    kidFriendly: row.kid_friendly_estimated === 'yes',
+    profile: row.profile_estimated,
+    serves: parseInt(row.serves, 10) || 4,
+    allergens: derivedAllergens(ings, []),
+    ingredients: ings.map(function(x){ return ing(x[0], x[1], x[2], x[3]); }),
+    steps: row.steps.split('||')
+  };
+}
+
+function sourceNote(count, real){
+  $('sourcenote').innerHTML = real
+    ? count + ' real recipes, loaded from <code>recipes.csv</code>.'
+    : 'Using the ' + count + ' built-in recipes. Open this through a web server to load ' +
+      'all of <code>recipes.csv</code>.';
+}
+
+function loadRecipes(){
+  fetch('recipes.csv')
+    .then(function(res){ if(!res.ok) throw new Error('no csv'); return res.text(); })
+    .then(function(text){
+      const rows = parseCSV(text).map(rowToRecipe).filter(function(r){
+        return r.id && r.name && r.ingredients.length >= 3 && r.steps.length;
+      });
+      if(rows.length < 20) throw new Error('csv too small');
+      RECIPES = rows;
+      sourceNote(rows.length, true);
+      const week = localStorage.getItem(WEEK_KEY);
+      if(week) renderWeek(JSON.parse(week));
+      renderRecent();
+      renderVerdicts();
+    })
+    .catch(function(){ sourceNote(BUILTIN.length, false); });
+}
+
+restorePrefs();
+syncPortions();
+showReading();
+const savedWeek = localStorage.getItem(WEEK_KEY);
+if(savedWeek){ renderWeek(JSON.parse(savedWeek)); $('actions').hidden = false; }
+loadRecipes();
+showAvoiding();
+renderRecent();
+renderVerdicts();
+</script>
