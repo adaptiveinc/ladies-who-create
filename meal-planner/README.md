@@ -1,7 +1,7 @@
 # Family Meal Planner
 
 Built in one afternoon by six people, most of whom had never written code, at
-the first Ladies AI session — 23 August 2026.
+the first Ladies AI session, 23 August 2026.
 
 Tell it about your family and get a week of dinners. Nothing repeats for a
 fortnight, the cards flip over to the recipe, and one button turns the week into
@@ -15,7 +15,7 @@ a shopping list.
 
 Works on a phone. Nothing to install, no account.
 
-Or run it yourself. `index.html` is the whole app — one file.
+Or run it yourself. `index.html` is the whole app, one file.
 
 - **Double-click it** and it runs with 65 built-in recipes.
 - **Serve the folder** and it loads all 420 real recipes from `recipes.csv`:
@@ -26,7 +26,7 @@ python3 -m http.server 8777
 
 Then open <http://localhost:8777>.
 
-Everything you type — your family, your allergies, your verdicts on dinners —
+Everything you type (your family, your allergies, your verdicts on dinners)
 stays in your own browser. Nothing is sent anywhere. There is no account.
 
 ## What it does
@@ -36,15 +36,15 @@ stays in your own browser. Nothing is sent anywhere. There is no account.
 | **Tell it about you** | Adults, children's ages, allergies, dislikes, nutrition goal, and how long you have to cook on a weeknight |
 | **Get a week** | Seven dinners, Monday to Sunday, each a complete meal |
 | **Flip a card** | The recipe, with amounts scaled to how many you're feeding, and a link to the original |
-| **No repeats** | Your last 14 dinners stay off the menu — two full weeks |
+| **No repeats** | Your last 14 dinners stay off the menu, two full weeks |
 | **Say what you thought** | 👍 brings a dinner back sooner, 👎 retires it for good |
-| **Shop and cook** | One shopping list, grouped by aisle, ready to paste into WhatsApp — and a printable week |
+| **Shop and cook** | One shopping list, grouped by aisle, ready to paste into WhatsApp, plus a printable week |
 
 ## What's in the folder
 
 ```
 index.html              the whole app
-recipes.csv             420 real recipes — the data the app reads
+recipes.csv             420 real recipes, the data the app reads
 tools/build_recipes.py  rebuilds recipes.csv from TheMealDB
 tools/make_gif.py       records the walkthrough GIF above
 CLAUDE.md               the rulebook the AI re-reads every session
@@ -73,7 +73,7 @@ python3 tools/build_recipes.py
 The method matters more than the app, because it works for anything.
 
 **1. Ideas on the whiteboard.** Everyone pitched a problem from their own life.
-The group picked the one that was already the right size — a real problem,
+The group picked the one that was already the right size: a real problem,
 small enough to finish.
 
 **2. Cut it to one sentence.** Version zero, written on the wall: *tell it about
@@ -81,7 +81,7 @@ your family, get a week of dinners, nothing repeats, one click gives a shopping
 list.* When someone later wanted a feature, that sentence settled it.
 
 **3. Write the rulebook before writing the app.** `CLAUDE.md` holds the standing
-rules — one file, no server, allergens must be right, no browser dialogs. The AI
+rules: one file, no server, allergens must be right, no browser dialogs. The AI
 re-reads it every conversation, so nobody has to repeat themselves. The catch,
 found the hard way: a rule that sneaks in wrong stays wrong all afternoon. The
 group deleted one within the first ten minutes.
@@ -93,11 +93,11 @@ have been something real to take home.
 
 **5. Build one slice, then look at the screen.** Every slice ended in the
 browser with someone trying to break it. This is where the actual work happened
-— see below.
+See below.
 
 **6. Fix causes, not symptoms.** When gnocchi turned out to be missing eggs, the
 fix wasn't to edit gnocchi. It was to stop hand-labelling allergens altogether
-and derive them from the ingredients — which then caught two more mistakes
+and derive them from the ingredients, which then caught two more mistakes
 nobody had spotted.
 
 **7. Swap the toy data for real data last.** The app was built against 65
@@ -113,11 +113,11 @@ odd". None came from the AI.
 | Someone said | What was actually wrong |
 |---|---|
 | "We never said no internet" | A constraint invented by the AI and written into the rulebook as if the group had agreed it |
-| "Gnocchi has eggs" | Allergens were hand-typed per recipe, so some were missed — a safety bug, not a typo |
+| "Gnocchi has eggs" | Allergens were hand-typed per recipe, so some were missed. A safety bug, not a typo |
 | "The food you don't like isn't working" | Dislikes matched literal words only, so "pasta" missed tortellini |
 | "Souvlaki alone with no side?" | Eleven dinners weren't complete meals; 29 names didn't say what was on the plate |
 | "Why is it avoiding 21?" | Every press of the button counted as a week eaten |
-| "I can't click Forget my history" | A browser dialog that gets silently blocked — looks identical to a broken button |
+| "I can't click Forget my history" | A browser dialog that gets silently blocked, which looks identical to a broken button |
 | "One row for one ingredient" | Three separate merge bugs: clove vs cloves, kg vs g, pieces vs grams |
 
 The lesson the group took away: **the person who can say clearly what's wrong is
