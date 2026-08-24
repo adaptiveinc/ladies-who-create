@@ -38,17 +38,60 @@ original serves four.
 **Live at** <https://fyyying.github.io/family-meal-planner/> — repository at
 <https://github.com/fyyying/family-meal-planner>.
 
-**Open points to work through next:** (add them here as they come up)
+**Decisions the room made on the day.** Recipe ids already used get removed
+from the candidate pool *before* the week is picked. Removing them from history
+was proposed and struck out — history stays whole, only the weekly selection is
+filtered. Cost was added to the plan as a preference the app should eventually
+take. Fields that were not being parsed correctly were spotted by the Tester
+and fixed in the room.
 
+## Open points to work through next
+
+From the Storyteller's notes and from the live site. Bugs first: those are what
+bite when someone actually cooks from it.
+
+### Bugs
+
+- [ ] **Running out of dishes.** Tight filters can leave fewer than seven
+      dinners. The room's call: loosen or reset the filter and say so on screen,
+      rather than showing an empty week.
 - [ ] Near-duplicate dinners can land in the same week — "Lasagne" and "Lasagna
       Sandwiches" both turned up on the live site. The no-repeat rule matches
       recipe ids, not similar dishes.
+- [ ] Amounts don't line up with the database — "3 chicken" where a weight
+      belongs. Ingredient quantities need aligning against their units.
 - [ ] Some real recipes measure vegetables in cups, so the shopping list can say
       "onion 90 ml". One row, correct maths, odd reading.
 - [ ] Two soups can land in the same week. Nothing spreads dish types across the
       days.
 - [ ] Recipe names come from the source, so a few are shouty or oddly punctuated.
-- [ ] _(waiting on the rest of the list from the room)_
+- [ ] **Cooking time only ever climbs up.** The note is ambiguous — ask the room
+      what they actually saw before building a fix.
+- [ ] **Testing gap:** 2 of the 3 checks flagged on the day were never
+      completed. Find out which, and finish them.
+
+### In the MVP, written down but not built
+
+The MVP the room wrote covered more than the afternoon reached. What's missing:
+
+- [ ] Kitchen equipment as a form field
+- [ ] Ingredients you already have at home — and subtracting those from the
+      shopping list
+- [ ] Cost, added to the plan on the day
+- [ ] Nutritional values shown as a table, so "balanced" against "lighter" means
+      something concrete
+- [ ] "Protein-rich" defined in the form instead of left to interpretation
+- [ ] Shopping list connected to an existing app, rather than copy-paste
+
+### Post-MVP, from the room
+
+- [ ] Allergy icons on the cards — fish, dairy, egg and the rest
+- [ ] Choose how many days you want to cook for, then change it and have the
+      plan adapt
+- [ ] Swap a dish: a "show me something else" option on any single day
+- [ ] Shopping preferences — buying weekly or daily, and units (ml, grams)
+- [ ] **Creativity dial:** how many dinners come from the recipe database and
+      how many the AI invents fresh
 
 ## The whole stack, one line
 
