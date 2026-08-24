@@ -1,130 +1,87 @@
-# Family Meal Planner
+# Ladies Who Create
 
-Built in one afternoon by six people, most of whom had never written code, at
-the first Ladies AI session — 23 August 2026.
+We meet, we pick one real problem, and we build something that works before we
+go home. Nobody needs to know how to code. The skill we're practising is saying
+clearly what you want.
 
-Tell it about your family and get a week of dinners. Nothing repeats for a
-fortnight, the cards flip over to the recipe, and one button turns the week into
-a shopping list.
+Everything we build lives in this repository, one folder per project, and every
+one of them is online.
 
-![Walkthrough of the meal planner](meal-planner-demo.gif)
+## What's here
 
-## Try it
+| Project | Live | Built |
+|---|---|---|
+| [Family Meal Planner](meal-planner/) | [Open it ↗](https://adaptiveinc.github.io/ladies-who-create/meal-planner/) | Session 1 — 23 August 2026 |
 
-**→ [fyyying.github.io/family-meal-planner](https://fyyying.github.io/family-meal-planner/)**
+## Pick up a problem
 
-Works on a phone. Nothing to install, no account.
+Every idea anyone has submitted is an [issue](../../issues). Nothing is
+rejected and nothing is assigned by anyone but you.
 
-Or run it yourself. `index.html` is the whole app — one file.
+1. Find one you like in the [issue list](../../issues).
+2. Comment **"I'll take this"** and add yourself as an assignee.
+3. If someone is already on it, say you want in — two or three people on one
+   problem is better than one, not worse.
+4. Build it. Come and show us, whether or not it's finished.
 
-- **Double-click it** and it runs with 65 built-in recipes.
-- **Serve the folder** and it loads all 420 real recipes from `recipes.csv`:
+**Claims last until the next session.** If nothing happened, it goes back to
+the pool. No explanation owed, and no shame in it — you can pick it up again.
 
-```bash
-python3 -m http.server 8777
-```
+Have a new problem? [Open an issue](../../issues/new/choose). Small and annoying
+beats big and impressive. "I hate renaming my photos" is a better starting point
+than "an app for the whole family".
 
-Then open <http://localhost:8777>.
+## How we build
 
-Everything you type — your family, your allergies, your verdicts on dinners —
-stays in your own browser. Nothing is sent anywhere. There is no account.
-
-## What it does
-
-| | |
-|---|---|
-| **Tell it about you** | Adults, children's ages, allergies, dislikes, nutrition goal, and how long you have to cook on a weeknight |
-| **Get a week** | Seven dinners, Monday to Sunday, each a complete meal |
-| **Flip a card** | The recipe, with amounts scaled to how many you're feeding, and a link to the original |
-| **No repeats** | Your last 14 dinners stay off the menu — two full weeks |
-| **Say what you thought** | 👍 brings a dinner back sooner, 👎 retires it for good |
-| **Shop and cook** | One shopping list, grouped by aisle, ready to paste into WhatsApp — and a printable week |
-
-## What's in the folder
+Open [Claude Code](https://claude.com/claude-code) in an empty folder and use
+these three, in order. This is close to what we actually typed in session one.
 
 ```
-index.html              the whole app
-recipes.csv             420 real recipes — the data the app reads
-tools/build_recipes.py  rebuilds recipes.csv from TheMealDB
-tools/make_gif.py       records the walkthrough GIF above
-CLAUDE.md               the rulebook the AI re-reads every session
-plan.md                 the build plan, in slices, with progress
+> Create a CLAUDE.md for this project. We are building: [your one sentence].
+  Rules: single HTML file, friendly design with big readable text, everything
+  saved in the browser, keep every version working.
 ```
 
-## About the recipes
-
-The dishes, ingredients, method, photos and source links are real, from
-[TheMealDB](https://www.themealdb.com/). Each recipe on the back of a card links
-to where it came from.
-
-**What is estimated:** prep time, calories, protein and whether a dish is
-kid-friendly. TheMealDB doesn't carry those, so they are worked out from the
-recipe and clearly labelled as guesses in the app. Cook from them happily; don't
-count macros off them.
-
-To rebuild the data yourself:
-
-```bash
-python3 tools/build_recipes.py
+```
+> Read CLAUDE.md and write plan.md: break the build into 3-4 small slices, each
+  one leaving a fully working app I can open in the browser. Keep it short and
+  non-technical.
 ```
 
-## How this got built
+```
+> Implement slice 1 from plan.md, then open it in the browser so we can test.
+```
 
-The method matters more than the app, because it works for anything.
+Then repeat the last one, changing the number, until you run out of slices or
+afternoon. Try to break each slice in the browser before moving to the next.
 
-**1. Ideas on the whiteboard.** Everyone pitched a problem from their own life.
-The group picked the one that was already the right size — a real problem,
-small enough to finish.
+Four things that made the difference in session one:
 
-**2. Cut it to one sentence.** Version zero, written on the wall: *tell it about
-your family, get a week of dinners, nothing repeats, one click gives a shopping
-list.* When someone later wanted a feature, that sentence settled it.
+- **Write the rules down first.** `CLAUDE.md` is the memory. The AI starts every
+  conversation with a blank mind.
+- **Make it plan before it builds.** Arguing with a plan is cheap.
+- **Slices, never the whole app.** Each one leaves something that works.
+- **Small on purpose.** No framework, no server, no database, no login. One file
+  you can double-click.
 
-**3. Write the rulebook before writing the app.** `CLAUDE.md` holds the standing
-rules — one file, no server, allergens must be right, no browser dialogs. The AI
-re-reads it every conversation, so nobody has to repeat themselves. The catch,
-found the hard way: a rule that sneaks in wrong stays wrong all afternoon. The
-group deleted one within the first ten minutes.
+## Put yours online
 
-**4. Slice it.** `plan.md` broke the build into four pieces, each leaving an app
-that *works*. Not "the database layer", but "you can fill in a form and see
-seven dinners". If the afternoon had run out at slice two, there would still
-have been something real to take home.
+Make a folder at the top of this repository, named after your project, with an
+`index.html` inside it. Push it. It appears at:
 
-**5. Build one slice, then look at the screen.** Every slice ended in the
-browser with someone trying to break it. This is where the actual work happened
-— see below.
+```
+https://adaptiveinc.github.io/ladies-who-create/your-folder-name/
+```
 
-**6. Fix causes, not symptoms.** When gnocchi turned out to be missing eggs, the
-fix wasn't to edit gnocchi. It was to stop hand-labelling allergens altogether
-and derive them from the ingredients — which then caught two more mistakes
-nobody had spotted.
+That's the whole deployment story. No build step, no hosting account.
 
-**7. Swap the toy data for real data last.** The app was built against 65
-made-up recipes. Replacing them with 420 real ones at the end changed no logic
-at all, because recipes are *data*. Building it the other way round would have
-meant fighting real data all afternoon.
+You can push straight to `main` — there are no pull requests to learn here.
+Just stay inside your own project folder.
 
-### What the room caught
+## House rules
 
-Every one of these came from someone looking at the screen and saying "that's
-odd". None came from the AI.
-
-| Someone said | What was actually wrong |
-|---|---|
-| "We never said no internet" | A constraint invented by the AI and written into the rulebook as if the group had agreed it |
-| "Gnocchi has eggs" | Allergens were hand-typed per recipe, so some were missed — a safety bug, not a typo |
-| "The food you don't like isn't working" | Dislikes matched literal words only, so "pasta" missed tortellini |
-| "Souvlaki alone with no side?" | Eleven dinners weren't complete meals; 29 names didn't say what was on the plate |
-| "Why is it avoiding 21?" | Every press of the button counted as a week eaten |
-| "I can't click Forget my history" | A browser dialog that gets silently blocked — looks identical to a broken button |
-| "One row for one ingredient" | Three separate merge bugs: clove vs cloves, kg vs g, pieces vs grams |
-
-The lesson the group took away: **the person who can say clearly what's wrong is
-doing the most valuable work in the room.** Nobody needed to know how to code to
-find every one of these.
-
-## Credits
-
-Recipes and photos: [TheMealDB](https://www.themealdb.com/). Built with
-[Claude Code](https://claude.com/claude-code).
+- Finished and tiny beats ambitious and broken.
+- Test it before you call it done. Try to break it yourself first.
+- Write down what's still wrong, in your project's `plan.md`. Known bugs are
+  not embarrassing; hidden ones are.
+- Come and show it, working or not. How it went wrong is the interesting part.

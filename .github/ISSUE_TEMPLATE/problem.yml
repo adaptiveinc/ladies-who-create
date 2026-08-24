@@ -1,0 +1,38 @@
+name: Submit a problem
+description: A thing you'd like to solve. Small and annoying is perfect.
+title: "[Your problem in a few words]"
+labels: ["submitted"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Three sentences is plenty. No idea is too small — the small ones are the
+        ones we can actually finish in an afternoon.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem?
+      placeholder: I never know what's in the freezer, so I buy things twice.
+    validations:
+      required: true
+  - type: textarea
+    id: who
+    attributes:
+      label: Who has it?
+      description: You, your work, your family?
+    validations:
+      required: true
+  - type: textarea
+    id: works
+    attributes:
+      label: What would "it works" look like?
+      placeholder: I can see what's in there from my phone, without opening it.
+    validations:
+      required: true
+  - type: checkboxes
+    id: build
+    attributes:
+      label: Would you like to build it yourself?
+      options:
+        - label: Yes — I'd like to take this one on, alone or with others
+        - label: I'd rather we built it together at a session
