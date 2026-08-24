@@ -18,6 +18,8 @@ agrees a slice is done, tick it off in the "Where we are" list at the top of
 ## Rules
 
 - Single HTML file. No install, no build step, no server. Double-click to open.
+- Tapping a dinner opens its recipe as a full-size card over the week, not as a
+  flip inside the small card — a recipe needs width to be readable.
 - Friendly design, big readable text, works on a TV screen and prints cleanly.
 - The recipes live in `recipes.csv`, not in the code. The app loads it at
   startup and falls back to the built-in pool when the browser blocks the read

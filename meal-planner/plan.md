@@ -171,9 +171,11 @@ eggs, fish), three goal buttons (balanced / lighter / high protein) and a
 prep-time slider — then a **Plan my week** button. Beside it, seven cards,
 Monday to Sunday.
 
-**The cards flip.** Front: photo, day, dish name, prep time, nutrition per
-person, kid-friendly mark. Tap it and it turns over: the ingredients with the
-amounts scaled to your portions, and the steps. Tap again to turn back.
+**Tap a card and the recipe opens big.** The card turns over into a full-size
+one that sits on top of the week, everything else dimmed behind it: photo,
+ingredients on the left with the amounts scaled to your portions, method on the
+right, thumbs, and a link to the original. Close it with the ×, the Escape key,
+or by tapping outside. On a phone it fills the screen.
 
 The portions box fills itself in from the household (an adult is one portion, a
 child under 12 is half) and you can overrule it for guests — every amount in
@@ -201,8 +203,8 @@ the app follows that number.
    is listed.
 6. Write `planWeek(prefs)` — score what survives (goal match first), pick seven
    different ones, assign Monday to Sunday, save to `mealplanner.week`.
-7. Render the cards, front and back — tap to flip, and the card grows to fit
-   the recipe rather than hiding it behind a scrollbar. Each photo is an `<img>` with an `onerror` that swaps in a
+7. Render the cards. Tapping one opens the recipe as a large card over the
+   week — reading a recipe in a narrow column beside six others is unusable. Each photo is an `<img>` with an `onerror` that swaps in a
    coloured tile showing the dish name.
 8. Scale the amounts: pool recipes are written for 4 grown-up portions. The
    portions box defaults to the household (adult = 1, child under 12 = 0.5) and

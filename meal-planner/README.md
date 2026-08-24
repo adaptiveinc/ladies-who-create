@@ -35,7 +35,7 @@ stays in your own browser. Nothing is sent anywhere. There is no account.
 |---|---|
 | **Tell it about you** | Adults, children's ages, allergies, dislikes, nutrition goal, and how long you have to cook on a weeknight |
 | **Get a week** | Seven dinners, Monday to Sunday, each a complete meal |
-| **Flip a card** | The recipe, with amounts scaled to how many you're feeding, and a link to the original |
+| **Tap a card** | The recipe opens full-size over the week — amounts scaled to how many you're feeding, and a link to the original |
 | **No repeats** | Your last 14 dinners stay off the menu, two full weeks |
 | **Say what you thought** | 👍 brings a dinner back sooner, 👎 retires it for good |
 | **Shop and cook** | One shopping list, grouped by aisle, ready to paste into WhatsApp, plus a printable week |

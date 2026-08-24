@@ -9,17 +9,16 @@ import csv, json, os, subprocess, sys
 from PIL import Image
 
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-BASE = "http://localhost:8777"
+BASE = "http://localhost:8777/meal-planner"
 FRAMES = "/tmp/mealframes"
 STEPS = [
     (0, 1400),   # the empty form
     (1, 1400),   # family filled in
     (2, 1600),   # nut allergy ticked
     (3, 2200),   # the week appears
-    (4, 1800),   # first card flipped to its recipe
-    (5, 1800),   # second card flipped
-    (6, 1500),   # thumbs up
-    (7, 2600),   # shopping list
+    (4, 2800),   # a recipe opens as a big card over the week
+    (5, 1600),   # closed again, dinner given a thumbs up
+    (6, 2600),   # shopping list
 ]
 
 DRIVER = """
@@ -41,10 +40,9 @@ DRIVER = """
       localStorage.setItem('mealplanner.week', JSON.stringify(WEEK));
       renderWeek(WEEK); document.getElementById('actions').hidden = false; showAvoiding();
     }
-    if(step >= 4){ document.querySelectorAll('.dish')[0].querySelector('.inner').click(); }
-    if(step >= 5){ document.querySelectorAll('.dish')[1].querySelector('.inner').click(); }
-    if(step >= 6){ document.querySelectorAll('.dish')[2].querySelector('.thumb.up').click(); }
-    if(step >= 7){ openSheet(); }
+    if(step === 4){ document.querySelectorAll('.dish')[1].querySelector('.inner').click(); }
+    if(step >= 5){ document.querySelectorAll('.dish')[2].querySelector('.thumb.up').click(); }
+    if(step >= 6){ openSheet(); }
   }, 60);
 })();
 </script>
