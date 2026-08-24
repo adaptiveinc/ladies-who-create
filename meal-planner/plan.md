@@ -83,6 +83,15 @@ The MVP the room wrote covered more than the afternoon reached. What's missing:
 - [ ] "Protein-rich" defined in the form instead of left to interpretation
 - [ ] Shopping list connected to an existing app, rather than copy-paste
 
+### The recipe pool itself
+
+- [ ] **Nobody chose the 420 recipes.** `tools/build_recipes.py` asks TheMealDB for
+      every dish under each letter of the alphabet and drops desserts, sides,
+      starters and breakfasts. Whatever survives is the pool. If the dishes turn
+      out not to be worth cooking, there is currently no way to curate them, add
+      your own family recipes, or point the app at a different source. Probably
+      the next real feature.
+
 ### Post-MVP, from the room
 
 - [ ] Allergy icons on the cards — fish, dairy, egg and the rest
