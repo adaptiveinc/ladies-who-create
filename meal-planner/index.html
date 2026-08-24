@@ -838,6 +838,7 @@ function shoppingList(week, prefs){
   week.forEach(function(slot){
     const rec = byId(slot.id);
     if(!rec) return;
+    if(!rec) return;
     rec.ingredients.forEach(function(i){
       const key = singular(i.item);
       if(!lines[key]) lines[key] = { item: singular(i.item), aisle: i.aisle, total: {}, dishes: [] };
@@ -1362,6 +1363,13 @@ function sourceNote(count, real){
       'all of <code>recipes.csv</code>.';
 }
 
+function restoreWeek(){
+  const week = localStorage.getItem(WEEK_KEY);
+  if(!week) return;
+  renderWeek(JSON.parse(week));
+  if($('week').children.length) $('actions').hidden = false;
+}
+
 function loadRecipes(){
   fetch('recipes.csv')
     .then(function(res){ if(!res.ok) throw new Error('no csv'); return res.text(); })
@@ -1372,19 +1380,19 @@ function loadRecipes(){
       if(rows.length < 20) throw new Error('csv too small');
       RECIPES = rows;
       sourceNote(rows.length, true);
-      const week = localStorage.getItem(WEEK_KEY);
-      if(week) renderWeek(JSON.parse(week));
+      restoreWeek();
       renderRecent();
       renderVerdicts();
     })
-    .catch(function(){ sourceNote(BUILTIN.length, false); });
+    .catch(function(){
+      sourceNote(BUILTIN.length, false);
+      restoreWeek();
+    });
 }
 
 restorePrefs();
 syncPortions();
 showReading();
-const savedWeek = localStorage.getItem(WEEK_KEY);
-if(savedWeek){ renderWeek(JSON.parse(savedWeek)); $('actions').hidden = false; }
 loadRecipes();
 showAvoiding();
 renderRecent();
