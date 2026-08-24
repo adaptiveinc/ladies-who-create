@@ -39,6 +39,21 @@
   .go:hover{background:#a8461f}
 
   .week{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+  .ghosts{grid-column:1/-1;border:1px dashed var(--line);border-radius:14px;
+    padding:26px 24px 24px;background:var(--card)}
+  .ghost-lead{margin:0;font-size:19px;font-weight:600;color:var(--ink)}
+  .ghost-sub{margin:6px 0 20px;font-size:14.5px;color:var(--soft);max-width:52ch;line-height:1.55}
+  .ghost-sub b{color:var(--accent);font-weight:600}
+  .ghost-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:12px}
+  .ghost{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--page);
+    height:132px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:10px 12px;gap:7px}
+  .ghost::before{content:'';position:absolute;left:0;right:0;top:0;height:66px;
+    background:var(--accent-soft);opacity:.5}
+  .ghost span{position:relative;font-size:11px;font-weight:600;letter-spacing:.8px;
+    text-transform:uppercase;color:var(--accent);opacity:.7}
+  .ghost i{position:relative;display:block;height:8px;border-radius:4px;background:var(--line)}
+  .ghost i.short{width:58%}
   .dish{height:var(--cardH,382px);perspective:1200px;background:none;border:none;
     transition:height .3s ease}
   .inner{position:relative;width:100%;height:100%;cursor:pointer;
@@ -246,7 +261,21 @@
       <button type="button" id="shopbtn">Shopping list</button>
       <button type="button" id="printbtn">Print the week</button>
     </div>
-    <section class="week" id="week"></section>
+    <section class="week" id="week">
+      <div class="ghosts">
+        <p class="ghost-lead">Your week appears here.</p>
+        <p class="ghost-sub">Tell us about your family on the left, then press <b>Plan my week</b>. Seven dinners, chosen from 420 real recipes, with a shopping list to match.</p>
+        <div class="ghost-grid" aria-hidden="true">
+          <div class="ghost"><span>Mon</span><i></i><i class="short"></i></div>
+          <div class="ghost"><span>Tue</span><i></i><i class="short"></i></div>
+          <div class="ghost"><span>Wed</span><i></i><i class="short"></i></div>
+          <div class="ghost"><span>Thu</span><i></i><i class="short"></i></div>
+          <div class="ghost"><span>Fri</span><i></i><i class="short"></i></div>
+          <div class="ghost"><span>Sat</span><i></i><i class="short"></i></div>
+          <div class="ghost"><span>Sun</span><i></i><i class="short"></i></div>
+        </div>
+      </div>
+    </section>
     <section class="verdicts" id="verdicts"></section>
     <section class="recent" id="recent"></section>
   </div>
