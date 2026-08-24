@@ -11,7 +11,7 @@ a shopping list.
 
 ## Try it
 
-**→ [fyyying.github.io/family-meal-planner](https://fyyying.github.io/family-meal-planner/)**
+**→ [adaptiveinc.github.io/ladies-who-create/meal-planner](https://adaptiveinc.github.io/ladies-who-create/meal-planner/)**
 
 Works on a phone. Nothing to install, no account.
 

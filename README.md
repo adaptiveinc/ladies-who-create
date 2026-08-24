@@ -13,23 +13,57 @@ one of them is online.
 |---|---|---|
 | [Family Meal Planner](meal-planner/) | [Open it ↗](https://adaptiveinc.github.io/ladies-who-create/meal-planner/) | Session 1 — 23 August 2026 |
 
-## Pick up a problem
+## How we work together
 
-Every idea anyone has submitted is an [issue](../../issues). Nothing is
-rejected and nothing is assigned by anyone but you.
+**One repository, one folder per project.** Everything we make lives here, side
+by side. One place to look, one issue list, one web address.
 
-1. Find one you like in the [issue list](../../issues).
-2. Comment **"I'll take this"** and add yourself as an assignee.
-3. If someone is already on it, say you want in — two or three people on one
-   problem is better than one, not worse.
-4. Build it. Come and show us, whether or not it's finished.
+**Issues are the backlog.** One issue per problem. Nothing is ever rejected and
+nothing is assigned by anyone but you. Browse them: [open issues](../../issues).
 
-**Claims last until the next session.** If nothing happened, it goes back to
-the pool. No explanation owed, and no shame in it — you can pick it up again.
+**Assigning yourself is how you claim something.** Open the issue, comment
+**"I'll take this"**, then click *assign yourself* in the sidebar.
 
-Have a new problem? [Open an issue](../../issues/new/choose). Small and annoying
-beats big and impressive. "I hate renaming my photos" is a better starting point
-than "an app for the whole family".
+- One name on an issue is a solo build.
+- Two or three names is a group that formed itself — better, not worse. If
+  somebody got there first, say you want in.
+
+**A claim lasts until the next session.** If life happened, it goes back to the
+pool. No explanation owed, and you can pick it up again later.
+
+**Every idea gets a plan, whether or not the group builds it.** Somebody runs
+the two prompts below on the issue and pastes the version-zero sentence and the
+slices into it. Then it's ready the day you feel like starting.
+
+**Everyone's idea gets its turn.** Across a season we each get one afternoon on
+our own problem. Voting decides the order, not whether.
+
+### The five stages
+
+Labels track where each idea is, and the board shows the same thing as columns:
+
+| Stage | What it means |
+|---|---|
+| `submitted` | An idea, written down. Nothing has happened yet. |
+| `has-a-plan` | Cut to one sentence, with slices. Ready for someone to start. |
+| `claimed` | Somebody is on it. |
+| `built` | It exists and it works. There's a folder and a link. |
+| `in-use` | Somebody actually uses it. This is the one that counts. |
+
+There is more than one way to finish, on purpose. Building it alone counts.
+Somebody actually using it counts most.
+
+### New problems
+
+[Open an issue](../../issues/new/choose). Small and annoying beats big and
+impressive — "I hate renaming my photos" is a better starting point than "an app
+for the whole family".
+
+### No pull requests
+
+Push straight to `main`. Stay inside your own project folder and you cannot get
+in anybody's way. Forks and pull requests are the part of GitHub where beginners
+drown, and we do not need them here.
 
 ## How we build
 
