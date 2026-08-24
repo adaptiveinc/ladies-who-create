@@ -35,8 +35,8 @@ sitting and week one becomes available again. Dislikes match words and groups,
 not concepts, so "meat" works but "healthy" does not. Recipe amounts assume the
 original serves four.
 
-**Live at** <https://fyyying.github.io/family-meal-planner/> — repository at
-<https://github.com/fyyying/family-meal-planner>.
+**Live at** <https://adaptiveinc.github.io/ladies-who-create/meal-planner/> —
+repository at <https://github.com/adaptiveinc/ladies-who-create>.
 
 **Decisions the room made on the day.** Recipe ids already used get removed
 from the candidate pool *before* the week is picked. Removing them from history
