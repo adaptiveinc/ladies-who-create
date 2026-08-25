@@ -184,7 +184,9 @@ Monday to Sunday.
 one that sits on top of the week, everything else dimmed behind it: photo,
 ingredients on the left with the amounts scaled to your portions, method on the
 right, thumbs, and a link to the original. Close it with the ×, the Escape key,
-or by tapping outside. On a phone it fills the screen.
+or by tapping outside. On a phone it fills the screen, the × stays pinned to the
+top corner however far you scroll, and there is a full-width **Close the
+recipe** button at the end.
 
 The portions box fills itself in from the household (an adult is one portion, a
 child under 12 is half) and you can overrule it for guests — every amount in
