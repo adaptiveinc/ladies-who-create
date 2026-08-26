@@ -14,7 +14,7 @@ it is to end up knowing what you just did.
 You need three things:
 
 1. **A GitHub account.** Free. [github.com/signup](https://github.com/signup).
-2. **Push access to this repository.** Send Yingying your username and she will
+2. **Push access to this repository.** Send Ying your username and she will
    add you. A public repository lets anyone *read* the code, but only
    collaborators can *change* it.
 3. **Claude Code**, with either a Claude or ChatGPT subscription.
