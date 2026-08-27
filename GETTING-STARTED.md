@@ -1,11 +1,12 @@
 # Getting started on your own machine
 
-Paste these into Claude Code, Codex, or whichever agentic AI harness you like,
-one prompt at a time. You do not need to understand git first. The prompts ask
-the AI to explain as it goes, which is the point.
+To start collaborating here, and become one of the ladies who create great
+stuff, here is a guide to getting started. Use these prompts in Claude Code,
+Codex, or whichever agentic AI harness you like.
 
-Ask for the explanation every time. Getting the command to run is the easy half.
-Knowing what you just did is what you are here for.
+You do not need to understand all the concepts to start with. The prompts ask
+the AI to explain as it goes, which will help you learn them. Ask for the
+explanation every time you have a question.
 
 ---
 
