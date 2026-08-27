@@ -1,11 +1,11 @@
 # Getting started on your own machine
 
-Everything below is meant to be pasted into Claude Code, one prompt at a time.
-You do not need to understand git first. The prompts ask Claude to explain as it
-goes, which is the point.
+Paste these into Claude Code, Codex, or whichever agentic AI harness you like,
+one prompt at a time. You do not need to understand git first. The prompts ask
+the AI to explain as it goes, which is the point.
 
-Ask for the explanation every time. The goal is not to get the command right,
-it is to end up knowing what you just did.
+Ask for the explanation every time. Getting the command to run is the easy half.
+Knowing what you just did is what you are here for.
 
 ---
 
@@ -14,10 +14,11 @@ it is to end up knowing what you just did.
 You need three things:
 
 1. **A GitHub account.** Free. [github.com/signup](https://github.com/signup).
-2. **Push access to this repository.** Send Ying your username and she will
-   add you. A public repository lets anyone *read* the code, but only
-   collaborators can *change* it.
-3. **Claude Code**, with either a Claude or ChatGPT subscription.
+2. **Push access to this repository.** Send Ying your username and she will add
+   you. Anyone can read a public repository. Changing one takes an invitation,
+   and you have to click accept before it works.
+3. **An agentic AI harness** in your terminal. Claude Code, Codex, or whatever
+   you prefer. Most need a subscription of around 20 USD a month.
 
 ---
 
@@ -58,7 +59,8 @@ work. Name the branch after the project, lowercase with hyphens.
 
 Then:
 - Make a folder at the top of the repository named after the project.
-- Inside it write CLAUDE.md with the rules: single HTML file, friendly design
+- Inside it write a rules file for your AI: CLAUDE.md for Claude Code,
+  AGENTS.md for Codex. Put the rules in it: single HTML file, friendly design
   with big readable text, everything saved in the browser, keep every version
   working.
 - Then write plan.md: 3 or 4 slices, each one leaving something I can open in
@@ -94,23 +96,36 @@ working, and starting from an old copy is how you end up with a mess to untangle
 ## Prompt 4: Save your work and ask for it to go live
 
 ```
-Use /adaptiveinc:commit and follow the conventions exactly.
-
 Commit what I have changed on this branch, push the branch, and open a pull
 request against main.
+
+Follow these conventions exactly:
+
+Commit messages on a branch
+- One line only. No description underneath.
+- Start with a capital letter.
+- No prefix. "Add the freezer form", never "feat: add the freezer form".
+
+Pull request title
+- Start with a lowercase prefix, one of: feature: fix: build: docs: ci: perf:
+  refactor: test:
+- Then a capitalised title.
+- For example: "feature: Add the freezer list"
+
+Pull request description
+- At most 5 bullet points, or one paragraph of at most 4 lines.
+- If it will not fit, the change is probably too big. Say so instead of
+  writing more.
+
+Never
+- No "Co-Authored-By" line, and no footer crediting an AI, on the commit, the
+  title, or the description. Drop it even if your tool wants to add it.
+- No names, account numbers or other personal details. This history is public
+  and permanent.
 
 Show me the commit message, the pull request title, and the description before
 you create them, and explain why each one is shaped the way it is.
 ```
-
-The conventions, so you can check the answer:
-
-| | |
-|---|---|
-| Branch commit | One line. Capital letter. No prefix, no description. `Add freezer list form` |
-| Pull request title | Lowercase prefix, then a capitalised title. `feature: Add freezer list` |
-| Pull request description | At most 5 bullets, or 4 short lines |
-| Never | `Co-Authored-By` or "Generated with Claude Code" on anything |
 
 **What you learn:** a commit is a save point with a message attached. Pushing
 sends your branch to GitHub. A pull request is you asking for your work to
@@ -133,7 +148,8 @@ within a minute or two. Delete the branch. It has done its job.
 
 ## When something goes wrong
 
-It will. That is normal and it is not a sign you are bad at this.
+It will. Everyone's does. Git is genuinely confusing and the error messages are
+written for people who already understand it.
 
 ```
 Something has gone wrong with git and I don't understand it. Here is what I see:
